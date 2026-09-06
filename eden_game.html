@@ -2,365 +2,1401 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>エデンの園ゲーム - BIBLE TASTE GAMES</title>
-  <!-- レトロゲーム風フォント（Google Fonts） -->
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@700;900&display=swap" rel="stylesheet">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>エデンの園：防衛戦</title>
   <style>
-    /* 全体のスタイル設定（ポータルサイトと統一） */
+    * {
+      box-sizing: border-box;
+    }
     body {
-      background-color: #1b153a; /* ポップな濃いパープル */
-      color: #ffffff;
-      font-family: 'M PLUS Rounded 1c', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 10px;
+      background-color: #0c0d14;
+      color: #fff;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
-      box-sizing: border-box;
-      background-image: 
-        radial-gradient(#392c6e 15%, transparent 16%),
-        radial-gradient(#392c6e 15%, transparent 16%);
-      background-size: 30px 30px;
-      background-position: 0 0, 15px 15px;
+      overflow-x: hidden;
       user-select: none;
+      -webkit-user-select: none;
     }
-
-    /* ヘッダー・タイトル */
-    header {
-      margin-top: 25px;
-      margin-bottom: 15px;
+    h1 {
+      margin: 5px 0;
+      font-size: 1.3rem;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
       text-align: center;
     }
-
-    h1 {
-      font-family: 'Press Start 2P', cursive, sans-serif;
-      font-size: 1.8rem;
-      color: #ffde59; /* レトロイエロー */
-      text-shadow: 
-        3px 3px 0px #ff3131, 
-        6px 6px 0px #000000;
-      letter-spacing: 2px;
-      margin: 0 0 10px 0;
-      line-height: 1.3;
-    }
-
-    .subtitle {
-      background-color: #00e676;
-      color: #000000;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-weight: bold;
-      display: inline-block;
-      box-shadow: 0 4px 0 #008c43;
-      font-size: 0.95rem;
-    }
-
-    /* ゲームコンテナ */
-    .game-wrapper {
-      width: 90%;
-      max-width: 500px;
-      background: #ffffff;
-      color: #333333;
-      border: 5px solid #000000;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 8px 8px 0px #000000;
-      box-sizing: border-box;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-
-    /* ステータスバー */
-    .status-bar {
+    #game-container {
+      position: relative;
       width: 100%;
+      max-width: 800px;
       display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      font-weight: 900;
-      background: #ffde59;
-      color: #000000;
-      padding: 10px 15px;
-      border: 4px solid #000000;
-      border-radius: 12px;
-      box-sizing: border-box;
-      box-shadow: 0 4px 0 #000000;
-    }
-
-    /* ゲーム画面（キャンバス） */
-    canvas {
-      width: 100%;
-      max-width: 460px;
-      height: 320px;
-      background-color: #a2e8dd; /* エデンの明るいグリーン水色背景 */
-      border: 4px solid #000000;
-      border-radius: 12px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
-      touch-action: manipulation;
-    }
-
-    /* 操作ボタンエリア */
-    .controls {
-      width: 100%;
-      display: flex;
-      gap: 15px;
       justify-content: center;
     }
-
-    /* ポップなゲームボタン */
-    .game-btn {
-      flex: 1;
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-weight: 900;
-      font-size: 1.1rem;
-      padding: 12px 0;
-      border: 4px solid #000000;
-      border-radius: 12px;
+    canvas {
+      width: 100%;
+      height: auto;
+      max-width: 800px;
+      border: 2px solid #ffd700;
+      border-radius: 8px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      background: radial-gradient(circle at 80% 50%, #1a233a 0%, #090a10 100%);
+      touch-action: none;
+      aspect-ratio: 800 / 500;
+    }
+    .controls-panel {
+      margin-top: 10px;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .restart-btn {
+      background: linear-gradient(135deg, #ffd700, #ff9800);
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 20px;
       cursor: pointer;
-      box-shadow: 0 5px 0 #000000;
-      transition: all 0.1s;
-      color: #ffffff;
-      text-align: center;
-      text-decoration: none;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+      transition: all 0.2s ease;
     }
-
-    .game-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #000000;
+    .restart-btn:active {
+      transform: scale(0.95);
     }
-
-    /* ボタンカラー */
-    .btn-expel { background-color: #ff5757; }  /* 追い返す（レッド） */
-    .btn-welcome { background-color: #00e676; color: #000000; } /* 入れる（グリーン） */
-    .btn-back { 
-      background-color: #00c2cb; 
-      max-width: 220px;
-      font-size: 0.95rem;
-      padding: 10px 0;
-      margin-top: 5px;
+    .lang-group {
+      display: flex;
+      gap: 5px;
     }
-
-    /* フッター */
-    footer {
-      margin-top: auto;
-      padding: 15px;
+    .lang-btn {
+      background: #2a2d3d;
+      color: #aaa;
+      border: 1px solid #555;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .lang-btn.active {
+      background: #00e5ff;
+      color: #000;
+      font-weight: bold;
+      border-color: #00e5ff;
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+    }
+    .info {
       font-size: 0.8rem;
-      color: #a0a0a0;
+      color: #ccc;
       text-align: center;
+      line-height: 1.4;
+      padding: 0 5px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>EDEN GAME</h1>
-    <div class="subtitle">👼 天使になってエデンを守ろう！ 👼</div>
-  </header>
+  <h1 id="title-text">エデンの園：防衛戦</h1>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+  </div>
 
-  <main class="game-wrapper">
-    <!-- ステータス表示 -->
-    <div class="status-bar">
-      <span>SCORE: <span id="score">0</span></span>
-      <span>TIME: <span id="time">30</span>s</span>
+  <div class="controls-panel">
+    <div class="button-group">
+      <button class="restart-btn" id="btn-restart" onclick="resetGame()">難易度選択に戻る</button>
+      <div class="lang-group">
+        <button class="lang-btn active" id="lang-kanji" onclick="setLanguage('kanji')">漢字</button>
+        <button class="lang-btn" id="lang-hiragana" onclick="setLanguage('hiragana')">ひらがな</button>
+        <button class="lang-btn" id="lang-english" onclick="setLanguage('english')">English</button>
+      </div>
     </div>
-
-    <!-- ゲーム画面（Canvas） -->
-    <canvas id="gameCanvas" width="460" height="320"></canvas>
-
-    <!-- 操作用UI -->
-    <div class="controls" id="action-controls">
-      <button class="game-btn btn-welcome" id="btn-welcome">⭕ 入れる</button>
-      <button class="game-btn btn-expel" id="btn-expel">❌ 追い返す</button>
+    <div class="info" id="info-text">
+      ⚠️ 1人でも通過で即ゲームオーバー！ | 追い返し+10 / 剣撃破+0 / 巨人撃破+50
     </div>
-
-    <!-- メニューに戻るボタン -->
-    <a href="index.html" class="game-btn btn-back">⬅ メニューにもどる</a>
-  </main>
-
-  <footer>
-    <p>&copy; BIBLE TASTE GAMES All Rights Reserved.</p>
-  </footer>
+  </div>
 
   <script>
+    // =========================================================
+    // ★ 多言語対応 (I18N) ★
+    // =========================================================
+    const I18N = {
+      kanji: {
+        title: "エデンの園：防衛戦",
+        restartBtn: "難易度選択に戻る",
+        infoText: "⚠️ 1人でも通過で即ゲームオーバー！ | 追い返し+10 / 剣撃破+0 / 巨人撃破+50",
+        score: "スコア",
+        lives: "防衛ライフ",
+        yearsProgress: "年経過",
+        warningNephilim: "⚠️ ラスト{0}年：巨人のネフィリム大量襲来！",
+        gameOverTitle: "エデンの園侵入を許しました",
+        gameOverDesc: "最終スコア: {0} 点 ({1}年経過時点で陥落)",
+        gameOverRetry: "画面クリックか「難易度選択に戻る」でリトライできます",
+        gameClearTitle: "{0}年間を守り抜きました！",
+        gameClearDesc: "大洪水がすべてを流し去り、天使たちは天へと帰還しました。",
+        gameClearScore: "最終防衛スコア: {0} 点",
+        selectDifficulty: "難易度を選んでください",
+        level1Name: "レベル 1",
+        level1Desc: "幼稚園の子でもできるレベル（とてもやさしい）",
+        level2Name: "レベル 2",
+        level2Desc: "小学生の子でもできるレベル（ふつう）",
+        level3Name: "レベル 3",
+        level3Desc: "大人でも楽しめるレベル（むずかしい）",
+        levelAngelName: "レベル 天使",
+        levelAngelDesc: "大人でもクリアが難しい難易度（激ムズ）"
+      },
+      hiragana: {
+        title: "えでんのその：ぼうえいせん",
+        restartBtn: "むずかしさ えらびにもどる",
+        infoText: "⚠️ 1にんでも とおったら ゲームオーバー！ | おいかえし+10 / けん+0 / きょじん+50",
+        score: "すこあ",
+        lives: "らいふ",
+        yearsProgress: "ねん けいか",
+        warningNephilim: "⚠️ らすと{0}ねん：きょじんの ねふぃりむが しゅうらい！",
+        gameOverTitle: "えでんのそのに はいられてしまいました",
+        gameOverDesc: "さいしゅう すこあ: {0} てん ({1}ねんで たおれた)",
+        gameOverRetry: "がめんを おすか 「むずかしさ えらびにもどる」を おしてね",
+        gameClearTitle: "{0}ねんかんを まもりぬきました！",
+        gameClearDesc: "おおみずが すべてを ながし、てんしたちは てんへ かえりました。",
+        gameClearScore: "さいしゅう すこあ: {0} てん",
+        selectDifficulty: "むずかしさを えらんでね",
+        level1Name: "れべる 1",
+        level1Desc: "ようちえんの こでも できる（とてもやさしい）",
+        level2Name: "れべる 2",
+        level2Desc: "しょうがくせいの こでも できる（ふつう）",
+        level3Name: "れべる 3",
+        level3Desc: "おとなでも たのしめる（むずかしい）",
+        levelAngelName: "れべる てんし",
+        levelAngelDesc: "おとなでも くりあが むずかしい（げきむず）"
+      },
+      english: {
+        title: "Garden of Eden: Defense",
+        restartBtn: "Select Difficulty",
+        infoText: "⚠️ Game Over if 1 passes! | Repel +10 / Sword +0 / Nephilim +50",
+        score: "Score",
+        lives: "Lives",
+        yearsProgress: "Years Passed",
+        warningNephilim: "⚠️ Last {0} Years: Invasion of Nephilim Giants!",
+        gameOverTitle: "Eden Has Been Breached",
+        gameOverDesc: "Final Score: {0} (Fell at Year {1})",
+        gameOverRetry: "Click screen or press 'Select Difficulty' to retry",
+        gameClearTitle: "Defended for {0} Years!",
+        gameClearDesc: "The Great Flood swept everything away, and angels ascended.",
+        gameClearScore: "Final Defense Score: {0}",
+        selectDifficulty: "Select Difficulty Level",
+        level1Name: "Level 1",
+        level1Desc: "Kindergarten Level (Very Easy)",
+        level2Name: "Level 2",
+        level2Desc: "Elementary School Level (Normal)",
+        level3Name: "Level 3",
+        level3Desc: "Adult Challenge Level (Hard)",
+        levelAngelName: "Level Angel",
+        levelAngelDesc: "Extreme Difficulty Level (Very Hard)"
+      }
+    };
+
+    let currentLang = 'kanji';
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('lang-kanji').classList.toggle('active', lang === 'kanji');
+      document.getElementById('lang-hiragana').classList.toggle('active', lang === 'hiragana');
+      document.getElementById('lang-english').classList.toggle('active', lang === 'english');
+
+      const t = I18N[currentLang];
+      document.getElementById('title-text').innerText = t.title;
+      document.getElementById('btn-restart').innerText = t.restartBtn;
+      document.getElementById('info-text').innerText = t.infoText;
+    }
+
+    function getText(key, ...args) {
+      let str = I18N[currentLang][key] || "";
+      args.forEach((arg, index) => {
+        str = str.replace(`{${index}}`, arg);
+      });
+      return str;
+    }
+
+    // =========================================================
+    // ★ 難易度パラメータ設定 ★
+    // =========================================================
+    const DIFFICULTY_SETTINGS = {
+      1: {
+        spawnInterval: 140,
+        speedHuman: 0.6,
+        speedNephilim: 0.9,
+        nephilimRate: 0.30
+      },
+      2: {
+        spawnInterval: 95,
+        speedHuman: 1.1,
+        speedNephilim: 1.5,
+        nephilimRate: 0.55
+      },
+      3: {
+        spawnInterval: 70,
+        speedHuman: 1.6,
+        speedNephilim: 2.1,
+        nephilimRate: 0.75
+      },
+      angel: {
+        spawnInterval: 45,
+        speedHuman: 2.2,
+        speedNephilim: 2.8,
+        nephilimRate: 0.90
+      }
+    };
+
+    const GAME_CONFIG = {
+      TOTAL_TIME_SEC: 5 * 60,   // ゲーム全体のリアル時間（5分 = 300秒）
+      TOTAL_YEARS: 1500,        // 守る期間（1500年）
+      NEPHILIM_YEARS: 120,      // ラスト何年をネフィリム出現期間にするか
+      
+      SCORE_RETURN: 10,         // 追い返し時
+      SCORE_NEPHILIM: 50        // ネフィリム撃破時
+    };
+
+    let selectedDifficulty = null; // '1', '2', '3', 'angel'
+    let isSelectingDifficulty = true; // 難易度選択画面フラグ
+
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const defenseLineX = 720;
 
-    const scoreEl = document.getElementById('score');
-    const timeEl = document.getElementById('time');
-    const btnWelcome = document.getElementById('btn-welcome');
-    const btnExpel = document.getElementById('btn-expel');
+    // --- 背景装飾用オブジェクト生成 ---
+    const edenDecorations = [];
+    const wastelandDecorations = [];
 
-    // 登場キャラクターリスト（人間＝追い返す、動物＝入れる）
-    const characters = [
-      { name: 'アダム', emoji: '👨', isHuman: true, message: '入ろうとしている！' },
-      { name: 'イブ', emoji: '👩', isHuman: true, message: '入ろうとしている！' },
-      { name: 'ヘビ', emoji: '🐍', isHuman: true, message: 'そそのかそうとしている！' }, // 人間側に分類（追い返す対象）
-      { name: 'ひつじ', emoji: '🐑', isHuman: false, message: 'あそびに来たよ！' },
-      { name: 'ライオン', emoji: '🦁', isHuman: false, message: 'あそびに来たよ！' },
-      { name: 'ハト', emoji: '🕊️', isHuman: false, message: 'あそびに来たよ！' },
-      { name: 'うさぎ', emoji: '🐰', isHuman: false, message: 'あそびに来たよ！' }
+    for (let i = 0; i < 18; i++) {
+      edenDecorations.push({
+        x: defenseLineX + 15 + Math.random() * (canvas.width - defenseLineX - 25),
+        y: 20 + Math.random() * (canvas.height - 40),
+        type: Math.random() < 0.4 ? 'tree' : (Math.random() < 0.7 ? 'flower' : 'grass'),
+        size: 10 + Math.random() * 12,
+        color: ['#e91e63', '#ffeb3b', '#00e676', '#00bcd4', '#ff4081'][Math.floor(Math.random() * 5)]
+      });
+    }
+
+    for (let i = 0; i < 25; i++) {
+      wastelandDecorations.push({
+        x: 30 + Math.random() * (defenseLineX - 60),
+        y: 20 + Math.random() * (canvas.height - 40),
+        type: Math.random() < 0.4 ? 'dead_tree' : (Math.random() < 0.7 ? 'dead_grass' : 'rock'),
+        size: 8 + Math.random() * 10
+      });
+    }
+
+    // --- サウンドエンジン (Web Audio API) ---
+    let audioCtx = null;
+    let isAudioInitialized = false;
+
+    function initAudio() {
+      if (isAudioInitialized) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      isAudioInitialized = true;
+      startBGM();
+    }
+
+    function playSE(type) {
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'return') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.15);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now);
+        osc.stop(now + 0.15);
+      } else if (type === 'kill_nephilim') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'kill_human') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.setValueAtTime(100, now + 0.15);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'damage') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.linearRampToValueAtTime(40, now + 0.3);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'flood') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(100, now);
+        osc.frequency.linearRampToValueAtTime(30, now + 2.0);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 2.0);
+        osc.start(now);
+        osc.stop(now + 2.0);
+      } else if (type === 'descend') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(261.63, now);
+        osc.frequency.exponentialRampToValueAtTime(523.25, now + 0.8);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+        osc.start(now);
+        osc.stop(now + 0.8);
+      } else if (type === 'select') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.1);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+    }
+
+    let bgmInterval = null;
+    let bgmStep = 0;
+    const bgmNotesNormal = [220, 261.63, 293.66, 329.63, 293.66, 261.63];
+    const bgmNotesHurry  = [220, 233.08, 220, 207.65, 220, 233.08];
+
+    function startBGM() {
+      if (bgmInterval) clearInterval(bgmInterval);
+      bgmInterval = setInterval(() => {
+        if (!audioCtx || gameOver || gameClear || isDescending || isSelectingDifficulty) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const currentYear = Math.floor((elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * GAME_CONFIG.TOTAL_YEARS);
+        const isHurry = currentYear >= (GAME_CONFIG.TOTAL_YEARS - GAME_CONFIG.NEPHILIM_YEARS);
+        const notes = isHurry ? bgmNotesHurry : bgmNotesNormal;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(notes[bgmStep % notes.length], now);
+        gain.gain.setValueAtTime(0.03, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.start(now);
+        osc.stop(now + 0.35);
+        bgmStep++;
+      }, 400);
+    }
+
+    window.addEventListener('pointerdown', initAudio, { once: true });
+
+    // --- ゲーム基本変数 ---
+    let score = 0;
+    let lives = 1;
+    let gameOver = false;
+    let gameClear = false;
+    let spawnTimer = 0;
+    let humans = [];
+    let slashedBodies = [];
+    let elapsedTime = 0;
+
+    let isDescending = false;
+    let descendProgress = 0;
+
+    let floodTimer = 0;
+    let floodWaveX = -200;
+    let rainDrops = [];
+
+    for (let i = 0; i < 150; i++) {
+      rainDrops.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        length: 10 + Math.random() * 20,
+        speed: 15 + Math.random() * 10
+      });
+    }
+
+    // --- 切断アニメーションクラス ---
+    class SlashedBody {
+      constructor(x, y, isNephilim) {
+        this.x = x;
+        this.y = y;
+        this.isNephilim = isNephilim;
+        this.life = 25;
+        this.maxLife = 25;
+
+        this.vxLeft = -2.5 - Math.random() * 2;
+        this.vxRight = 2.5 + Math.random() * 2;
+        this.vyLeft = (Math.random() - 0.5) * 3;
+        this.vyRight = (Math.random() - 0.5) * 3;
+
+        this.rotLeft = 0;
+        this.rotRight = 0;
+        this.rotSpeedLeft = -0.15;
+        this.rotSpeedRight = 0.15;
+      }
+
+      update() {
+        this.life--;
+        this.x += 0.5;
+        this.rotLeft += this.rotSpeedLeft;
+        this.rotRight += this.rotSpeedRight;
+      }
+
+      draw() {
+        const alpha = Math.max(0, this.life / this.maxLife);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+
+        const scale = this.isNephilim ? 1.5 : 1.0;
+
+        ctx.save();
+        ctx.translate(this.x + this.vxLeft * (this.maxLife - this.life) * 0.3, this.y + this.vyLeft * (this.maxLife - this.life) * 0.3);
+        ctx.rotate(this.rotLeft);
+        ctx.scale(scale, scale);
+        this.drawHalf(-1);
+        ctx.restore();
+
+        ctx.save();
+        ctx.translate(this.x + this.vxRight * (this.maxLife - this.life) * 0.3, this.y + this.vyRight * (this.maxLife - this.life) * 0.3);
+        ctx.rotate(this.rotRight);
+        ctx.scale(scale, scale);
+        this.drawHalf(1);
+        ctx.restore();
+
+        if (this.life > this.maxLife - 8) {
+          ctx.strokeStyle = '#ffeb3b';
+          ctx.lineWidth = 3;
+          ctx.shadowColor = '#ff3d00';
+          ctx.shadowBlur = 10;
+          ctx.beginPath();
+          ctx.moveTo(this.x, this.y - 25 * scale);
+          ctx.lineTo(this.x, this.y + 25 * scale);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      drawHalf(side) {
+        ctx.beginPath();
+        if (side === -1) {
+          ctx.rect(-20, -30, 20, 60);
+        } else {
+          ctx.rect(0, -30, 20, 60);
+        }
+        ctx.clip();
+
+        if (this.isNephilim) {
+          ctx.fillStyle = '#4e342e';
+          ctx.fillRect(-10, -8, 20, 20);
+          ctx.fillStyle = '#8d6e63';
+          ctx.fillRect(-8, 5, 16, 10);
+          ctx.beginPath(); ctx.arc(0, -16, 10, 0, Math.PI * 2); ctx.fillStyle = '#6d4c41'; ctx.fill();
+        } else {
+          ctx.fillStyle = '#d7ccc8';
+          ctx.fillRect(-6, -4, 12, 14);
+          ctx.beginPath(); ctx.arc(0, -10, 6, 0, Math.PI * 2); ctx.fillStyle = '#ffcc80'; ctx.fill();
+        }
+      }
+    }
+
+    // --- 天使クラス ---
+    class Angel {
+      constructor(name, targetX, targetY, mainColor, auraColor) {
+        this.name = name;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.x = targetX;
+        this.y = targetY;
+        this.radius = 28;
+        this.mainColor = mainColor;
+        this.auraColor = auraColor;
+        this.isDragging = false;
+        this.wingAngle = 0;
+        this.ascending = false;
+        this.pushAnim = 0;
+      }
+
+      push() {
+        this.pushAnim = 12;
+      }
+
+      draw() {
+        this.wingAngle += 0.05;
+        const wingOffset = Math.sin(this.wingAngle) * 4;
+
+        if (this.ascending) {
+          this.y -= 2.5;
+        }
+
+        if (this.pushAnim > 0) {
+          this.pushAnim--;
+        }
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        if (this.isDragging) {
+          ctx.beginPath();
+          ctx.arc(0, 0, this.radius + 10, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        ctx.shadowColor = this.auraColor;
+        ctx.shadowBlur = 15;
+
+        // 翼
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(-10, -10);
+        ctx.quadraticCurveTo(-45 - wingOffset, -35, -25 - wingOffset, 15);
+        ctx.quadraticCurveTo(-15, 10, -10, 15);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(10, -10);
+        ctx.quadraticCurveTo(45 + wingOffset, -35, 25 + wingOffset, 15);
+        ctx.quadraticCurveTo(15, 10, 10, 15);
+        ctx.fill();
+
+        // 肉体
+        ctx.fillStyle = this.mainColor;
+        ctx.beginPath();
+        ctx.moveTo(-16, 5);
+        ctx.lineTo(16, 5);
+        ctx.lineTo(12, 32);
+        ctx.lineTo(-12, 32);
+        ctx.closePath();
+        ctx.fill();
+
+        const skinColor = '#ffdbac';
+        ctx.fillStyle = skinColor;
+
+        ctx.beginPath();
+        ctx.moveTo(-22, -10);
+        ctx.lineTo(22, -10);
+        ctx.lineTo(16, 8);
+        ctx.lineTo(-16, 8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#d8a070';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-12, -2); ctx.lineTo(0, 3); ctx.lineTo(12, -2);
+        ctx.moveTo(0, -10); ctx.lineTo(0, 6);
+        ctx.stroke();
+
+        const pushX = (this.pushAnim > 0) ? -18 : -5;
+        ctx.fillStyle = skinColor;
+        ctx.strokeStyle = '#d8a070';
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(-16 + pushX, -2, 6, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(18, -2, 6, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = skinColor;
+        ctx.beginPath();
+        ctx.arc(0, -20, 11, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fbc02d';
+        ctx.beginPath();
+        ctx.arc(0, -23, 11, Math.PI, 0);
+        ctx.lineTo(12, -18);
+        ctx.lineTo(-12, -18);
+        ctx.fill();
+
+        ctx.fillStyle = '#333';
+        ctx.fillRect(-6, -21, 3, 2);
+        ctx.fillRect(3, -21, 3, 2);
+
+        ctx.restore();
+      }
+    }
+
+    const angels = [
+      new Angel('天使1', 650, 150, '#c62828', '#ff5252'),
+      new Angel('天使2', 650, 350, '#1565c0', '#448aff')
     ];
 
-    let currentGuest = null;
-    let score = 0;
-    let timeLeft = 30;
-    let gameInterval = null;
-    let isPlaying = false;
-    let feedbackMessage = '';
-    let feedbackColor = '';
+    // --- 座標変換ユーティリティ ---
+    function getCanvasCoordinates(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
 
-    // ゲーム開始
-    function startGame() {
-      score = 0;
-      timeLeft = 30;
-      isPlaying = true;
-      scoreEl.textContent = score;
-      timeEl.textContent = timeLeft;
-      
-      nextGuest();
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+      };
+    }
 
-      if (gameInterval) clearInterval(gameInterval);
-      gameInterval = setInterval(() => {
-        timeLeft--;
-        timeEl.textContent = timeLeft;
+    // --- 難易度選択ボタン領域判定 ---
+    const diffButtons = [
+      { id: '1', keyName: 'level1Name', keyDesc: 'level1Desc', y: 150, height: 60, color: '#4caf50' },
+      { id: '2', keyName: 'level2Name', keyDesc: 'level2Desc', y: 225, height: 60, color: '#0288d1' },
+      { id: '3', keyName: 'level3Name', keyDesc: 'level3Desc', y: 300, height: 60, color: '#f57c00' },
+      { id: 'angel', keyName: 'levelAngelName', keyDesc: 'levelAngelDesc', y: 375, height: 60, color: '#d32f2f' }
+    ];
 
-        if (timeLeft <= 0) {
-          endGame();
+    // --- ドラッグ & タップ操作 ---
+    let draggedAngel = null;
+    let dragOffsetY = 0;
+
+    function handleStart(clientX, clientY) {
+      initAudio();
+      const pos = getCanvasCoordinates(clientX, clientY);
+
+      // 難易度選択画面の場合
+      if (isSelectingDifficulty) {
+        for (const btn of diffButtons) {
+          if (pos.x >= 150 && pos.x <= 650 && pos.y >= btn.y && pos.y <= btn.y + btn.height) {
+            playSE('select');
+            startGame(btn.id);
+            return;
+          }
         }
-      }, 1000);
-    }
-
-    // 次のキャラクターを読み込み
-    function nextGuest() {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      currentGuest = characters[randomIndex];
-      draw();
-    }
-
-    // 判定処理
-    function handleChoice(action) {
-      if (!isPlaying) {
-        startGame();
         return;
       }
 
-      // action: 'welcome' (入れる) or 'expel' (追い返す)
-      if ((action === 'expel' && currentGuest.isHuman) || (action === 'welcome' && !currentGuest.isHuman)) {
-        // 正解！
-        score += 100;
-        feedbackMessage = 'セイカイ！ 判決成功！';
-        feedbackColor = '#00c2cb';
-      } else {
-        // 不正解
-        score = Math.max(0, score - 50);
-        feedbackMessage = 'ザンネン... 判決ミス！';
-        feedbackColor = '#ff3131';
+      if (gameOver) {
+        resetGame();
+        return;
       }
 
-      scoreEl.textContent = score;
-      nextGuest();
+      if (gameClear || isDescending) return;
+
+      for (const angel of angels) {
+        const dist = Math.hypot(pos.x - angel.x, pos.y - angel.y);
+        if (dist < angel.radius + 20) {
+          draggedAngel = angel;
+          angel.isDragging = true;
+          dragOffsetY = pos.y - angel.y;
+          break;
+        }
+      }
     }
 
-    // Canvas描画処理
-    function draw() {
-      // 背景（エデンの園風グラデーション）
-      ctx.fillStyle = '#a2e8dd';
+    function handleMove(clientX, clientY) {
+      if (draggedAngel && !gameClear && !isDescending && !isSelectingDifficulty) {
+        const pos = getCanvasCoordinates(clientX, clientY);
+        draggedAngel.y = Math.max(draggedAngel.radius, Math.min(canvas.height - draggedAngel.radius, pos.y - dragOffsetY));
+      }
+    }
+
+    function handleEnd() {
+      if (draggedAngel) {
+        draggedAngel.isDragging = false;
+        draggedAngel = null;
+      }
+    }
+
+    canvas.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
+    window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+    window.addEventListener('mouseup', handleEnd);
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 0) {
+        handleStart(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', handleEnd);
+
+    // --- 回転する炎の剣 ---
+    const sword = {
+      x: 650,
+      y: 250,
+      angle: 0,
+      length: 60,
+      t: 0
+    };
+
+    function updateSword() {
+      const dist = Math.hypot(angels[0].x - angels[1].x, angels[0].y - angels[1].y);
+      const maxDist = 400;
+      const minDist = 50;
+      const clampedDist = Math.max(minDist, Math.min(maxDist, dist));
+      const speedMultiplier = 1 + (1 - (clampedDist - minDist) / (maxDist - minDist)) * 2.5;
+
+      sword.angle += 0.2 * speedMultiplier;
+      sword.t += 0.015 * speedMultiplier;
+
+      const rawSine = (Math.sin(sword.t) + 1) / 2;
+      const constrainedT = 0.15 + rawSine * 0.70;
+
+      sword.x = angels[0].x * (1 - constrainedT) + angels[1].x * constrainedT;
+      sword.y = angels[0].y * (1 - constrainedT) + angels[1].y * constrainedT;
+    }
+
+    function drawSword() {
+      ctx.save();
+      ctx.translate(sword.x, sword.y);
+      ctx.rotate(sword.angle);
+
+      ctx.beginPath();
+      ctx.arc(0, 0, sword.length / 2 + 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 69, 0, 0.4)';
+      ctx.shadowColor = '#ff3d00';
+      ctx.shadowBlur = 20;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(0, -sword.length / 2 - 5);
+      ctx.lineTo(5, sword.length / 2 - 10);
+      ctx.lineTo(-5, sword.length / 2 - 10);
+      ctx.closePath();
+      ctx.fillStyle = '#ffea00';
+      ctx.fill();
+
+      ctx.fillStyle = '#d50000';
+      ctx.fillRect(-10, sword.length / 2 - 10, 20, 4);
+
+      ctx.fillStyle = '#5d4037';
+      ctx.fillRect(-3, sword.length / 2 - 6, 6, 12);
+
+      ctx.restore();
+    }
+
+    // --- キャラクタークラス ---
+    class Character {
+      constructor(type) {
+        this.type = type;
+        this.x = -30;
+        this.y = 80 + Math.random() * (canvas.height - 160);
+        this.radius = (type === 'nephilim') ? 28 : 15;
+
+        const diffConf = DIFFICULTY_SETTINGS[selectedDifficulty] || DIFFICULTY_SETTINGS['2'];
+        this.baseSpeed = (type === 'nephilim') ? diffConf.speedNephilim : diffConf.speedHuman;
+        this.speed = this.baseSpeed;
+        
+        this.returning = false;
+        this.animFrame = 0;
+
+        this.isPausing = false;
+        this.pauseTimer = 0;
+        this.nextPauseX = 120 + Math.random() * 380;
+        this.lookAngle = 0;
+        this.pauseCount = 0;
+        this.maxPauses = Math.floor(Math.random() * 2) + 1;
+        this.dodgeDirY = Math.random() < 0.5 ? 1 : -1;
+      }
+
+      update() {
+        this.animFrame += 0.15;
+
+        if (this.returning) {
+          this.x -= this.baseSpeed * 2.0;
+          return;
+        }
+
+        if (this.isPausing) {
+          this.pauseTimer++;
+          this.lookAngle = Math.sin(this.pauseTimer * 0.2) * 0.6;
+
+          if (this.type === 'super_cunning') {
+            this.y += this.dodgeDirY * 1.8;
+            if (this.y < 50) { this.y = 50; this.dodgeDirY = 1; }
+            if (this.y > canvas.height - 50) { this.y = canvas.height - 50; this.dodgeDirY = -1; }
+          }
+
+          if (this.pauseTimer > 60) {
+            this.isPausing = false;
+            this.pauseTimer = 0;
+            this.pauseCount++;
+            
+            if (this.type === 'righteous') {
+              this.returning = true;
+              playSE('return');
+            } else {
+              this.nextPauseX = this.x + 100 + Math.random() * 150;
+            }
+          }
+          return;
+        }
+
+        this.x += this.speed;
+
+        if (!this.returning && this.pauseCount < this.maxPauses && this.x >= this.nextPauseX) {
+          this.isPausing = true;
+          this.pauseTimer = 0;
+
+          if (this.type === 'super_cunning') {
+            const nearestAngel = (Math.abs(angels[0].y - this.y) < Math.abs(angels[1].y - this.y)) ? angels[0] : angels[1];
+            this.dodgeDirY = (this.y > nearestAngel.y) ? 1 : -1;
+          }
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        if (this.returning) {
+          ctx.scale(-1, 1);
+        }
+
+        const legAngle = this.isPausing ? 0 : Math.sin(this.animFrame) * 0.5;
+
+        if (this.type === 'nephilim') {
+          ctx.scale(1.5, 1.5);
+
+          ctx.beginPath();
+          ctx.arc(0, -5, 20, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(180, 40, 40, 0.2)';
+          ctx.shadowColor = '#d50000';
+          ctx.shadowBlur = 12;
+          ctx.fill();
+
+          ctx.strokeStyle = '#3e2723';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(-4, 10); ctx.lineTo(-4 + Math.sin(legAngle) * 12, 28); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(4, 10); ctx.lineTo(4 - Math.sin(legAngle) * 12, 28); ctx.stroke();
+
+          ctx.fillStyle = '#4e342e';
+          ctx.fillRect(-10, -8, 20, 20);
+          ctx.fillStyle = '#8d6e63';
+          ctx.fillRect(-8, 5, 16, 10);
+
+          ctx.strokeStyle = '#5d4037';
+          ctx.lineWidth = 6;
+          ctx.beginPath(); ctx.moveTo(8, -4); ctx.lineTo(18, 5); ctx.stroke();
+          
+          ctx.fillStyle = '#3e2723';
+          ctx.beginPath(); ctx.arc(22, 2, 6, 0, Math.PI * 2); ctx.fill();
+
+          ctx.beginPath(); ctx.arc(0, -16, 10, 0, Math.PI * 2); ctx.fillStyle = '#6d4c41'; ctx.fill();
+          ctx.fillStyle = '#212121';
+          ctx.beginPath();
+          ctx.moveTo(-8, -22); ctx.lineTo(-2, -28); ctx.lineTo(2, -22); ctx.lineTo(8, -28); ctx.lineTo(6, -18);
+          ctx.fill();
+
+          ctx.fillStyle = '#ff1744';
+          ctx.beginPath();
+          ctx.arc(3 + (this.isPausing ? this.lookAngle * 3 : 0), -17, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+
+        } else {
+          const tunicColor = '#d7ccc8';
+
+          ctx.strokeStyle = '#b0bec5';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+
+          ctx.beginPath(); ctx.moveTo(-2, 8); ctx.lineTo(-2 + Math.sin(legAngle) * 8, 20); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(2, 8); ctx.lineTo(2 - Math.sin(legAngle) * 8, 20); ctx.stroke();
+
+          ctx.fillStyle = tunicColor;
+          ctx.beginPath();
+          ctx.moveTo(-6, -4); ctx.lineTo(6, -4); ctx.lineTo(8, 10); ctx.lineTo(-8, 10);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(0, -10, 6, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffcc80';
+          ctx.fill();
+
+          const eyeOffset = this.isPausing ? this.lookAngle * 4 : 2;
+          ctx.fillStyle = '#3e2723';
+          ctx.beginPath();
+          ctx.arc(eyeOffset, -11, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (this.returning) {
+          ctx.save();
+          ctx.fillStyle = '#00b0ff';
+          ctx.strokeStyle = '#0081cb';
+          ctx.lineWidth = 1;
+
+          const dropX = 10;
+          const dropY = -22;
+          ctx.beginPath();
+          ctx.moveTo(dropX, dropY - 6);
+          ctx.quadraticCurveTo(dropX + 5, dropY, dropX, dropY + 4);
+          ctx.quadraticCurveTo(dropX - 5, dropY, dropX, dropY - 6);
+          ctx.fill();
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        ctx.restore();
+      }
+    }
+
+    // --- 背景フィールド描画関数 ---
+    function drawEnvironment() {
+      for (const item of wastelandDecorations) {
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        if (item.type === 'dead_tree') {
+          ctx.strokeStyle = '#4a3728';
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(0, 0); ctx.lineTo(0, -item.size * 1.5);
+          ctx.moveTo(0, -item.size * 0.8); ctx.lineTo(-item.size * 0.6, -item.size * 1.2);
+          ctx.moveTo(0, -item.size * 0.5); ctx.lineTo(item.size * 0.5, -item.size * 0.9);
+          ctx.stroke();
+        } else if (item.type === 'dead_grass') {
+          ctx.strokeStyle = '#6e5d4f';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, 0); ctx.lineTo(-4, -item.size);
+          ctx.moveTo(0, 0); ctx.lineTo(0, -item.size * 1.2);
+          ctx.moveTo(0, 0); ctx.lineTo(5, -item.size * 0.8);
+          ctx.stroke();
+        } else if (item.type === 'rock') {
+          ctx.fillStyle = '#3a332c';
+          ctx.beginPath();
+          ctx.arc(0, 0, item.size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      const edenGradient = ctx.createLinearGradient(defenseLineX, 0, canvas.width, 0);
+      edenGradient.addColorStop(0, 'rgba(46, 125, 50, 0.25)');
+      edenGradient.addColorStop(1, 'rgba(27, 94, 32, 0.65)');
+      ctx.fillStyle = edenGradient;
+      ctx.fillRect(defenseLineX, 0, canvas.width - defenseLineX, canvas.height);
+
+      ctx.beginPath();
+      ctx.moveTo(defenseLineX, 0); ctx.lineTo(defenseLineX, canvas.height);
+      ctx.strokeStyle = '#81c784';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      for (const item of edenDecorations) {
+        ctx.save();
+        ctx.translate(item.x, item.y);
+        if (item.type === 'tree') {
+          ctx.fillStyle = '#5d4037';
+          ctx.fillRect(-3, 0, 6, item.size * 0.8);
+          ctx.fillStyle = '#2e7d32';
+          ctx.beginPath();
+          ctx.arc(0, -item.size * 0.3, item.size * 0.8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#4caf50';
+          ctx.beginPath();
+          ctx.arc(-3, -item.size * 0.5, item.size * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (item.type === 'flower') {
+          ctx.strokeStyle = '#388e3c';
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -8); ctx.stroke();
+          ctx.fillStyle = item.color;
+          ctx.beginPath(); ctx.arc(0, -9, 4, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.beginPath(); ctx.arc(0, -9, 1.5, 0, Math.PI * 2); ctx.fill();
+        } else if (item.type === 'grass') {
+          ctx.strokeStyle = '#66bb6a';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(-3, 0); ctx.lineTo(-5, -item.size * 0.8);
+          ctx.moveTo(0, 0); ctx.lineTo(0, -item.size);
+          ctx.moveTo(3, 0); ctx.lineTo(4, -item.size * 0.7);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+    }
+
+    // --- ゲーム開始処理 ---
+    function startGame(diffKey) {
+      selectedDifficulty = diffKey;
+      isSelectingDifficulty = false;
+
+      score = 0;
+      lives = 1;
+      gameOver = false;
+      gameClear = false;
+      elapsedTime = 0;
+      spawnTimer = 0;
+      humans = [];
+      slashedBodies = [];
+      floodTimer = 0;
+      floodWaveX = -200;
+
+      isDescending = true;
+      descendProgress = 0;
+      angels[0].x = angels[0].targetX; angels[0].y = -60; angels[0].ascending = false;
+      angels[1].x = angels[1].targetX; angels[1].y = -120; angels[1].ascending = false;
+
+      playSE('descend');
+    }
+
+    // --- 難易度選択画面へ戻る ---
+    function resetGame() {
+      isSelectingDifficulty = true;
+      gameOver = false;
+      gameClear = false;
+      humans = [];
+      slashedBodies = [];
+    }
+
+    // --- メインゲームループ ---
+    function update() {
+      // ★ 難易度選択画面の描画
+      if (isSelectingDifficulty) {
+        drawDifficultyScreen();
+        requestAnimationFrame(update);
+        return;
+      }
+
+      if (gameOver) {
+        draw(Math.floor((elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * GAME_CONFIG.TOTAL_YEARS), false);
+        requestAnimationFrame(update);
+        return;
+      }
+
+      if (isDescending) {
+        descendProgress += 0.02;
+        if (descendProgress > 1) descendProgress = 1;
+
+        const easeOut = Math.sin((descendProgress * Math.PI) / 2);
+        angels[0].y = -60 + (angels[0].targetY - (-60)) * easeOut;
+        angels[1].y = -120 + (angels[1].targetY - (-120)) * easeOut;
+
+        updateSword();
+        draw(0, false);
+
+        if (descendProgress >= 1) {
+          isDescending = false;
+          angels[0].y = angels[0].targetY;
+          angels[1].y = angels[1].targetY;
+        }
+        requestAnimationFrame(update);
+        return;
+      }
+
+      if (gameClear) {
+        updateFloodEffect();
+        draw(GAME_CONFIG.TOTAL_YEARS, true);
+        requestAnimationFrame(update);
+        return;
+      }
+
+      elapsedTime += 1 / 60;
+      if (elapsedTime >= GAME_CONFIG.TOTAL_TIME_SEC) {
+        elapsedTime = GAME_CONFIG.TOTAL_TIME_SEC;
+        gameClear = true;
+        playSE('flood');
+        angels[0].ascending = true;
+        angels[1].ascending = true;
+      }
+
+      const currentYear = Math.floor((elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * GAME_CONFIG.TOTAL_YEARS);
+      const isLastYears = currentYear >= (GAME_CONFIG.TOTAL_YEARS - GAME_CONFIG.NEPHILIM_YEARS);
+
+      const diffConf = DIFFICULTY_SETTINGS[selectedDifficulty] || DIFFICULTY_SETTINGS['2'];
+
+      const righteousRatio = isLastYears ? 0 : Math.max(0, 0.4 * (1 - elapsedTime / (GAME_CONFIG.TOTAL_TIME_SEC - 22)));
+      const superCunningRatio = Math.min(0.70, 0.10 + (elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * 0.60);
+
+      updateSword();
+
+      // 切断エフェクトの更新
+      for (let i = slashedBodies.length - 1; i >= 0; i--) {
+        slashedBodies[i].update();
+        if (slashedBodies[i].life <= 0) {
+          slashedBodies.splice(i, 1);
+        }
+      }
+
+      spawnTimer++;
+      const currentSpawnInterval = isLastYears ? diffConf.spawnInterval * 0.5 : diffConf.spawnInterval;
+      if (spawnTimer > currentSpawnInterval) {
+        let spawnedType = 'cunning';
+
+        if (isLastYears && Math.random() < diffConf.nephilimRate) {
+          spawnedType = 'nephilim';
+        } else if (Math.random() < righteousRatio) {
+          spawnedType = 'righteous';
+        } else if (Math.random() < superCunningRatio) {
+          spawnedType = 'super_cunning';
+        }
+
+        humans.push(new Character(spawnedType));
+        spawnTimer = 0;
+      }
+
+      for (let i = humans.length - 1; i >= 0; i--) {
+        const h = humans[i];
+        h.update();
+
+        if (h.returning && h.x < -40) {
+          humans.splice(i, 1);
+          score += GAME_CONFIG.SCORE_RETURN;
+          continue;
+        }
+
+        if (!h.returning && h.x >= defenseLineX) {
+          humans.splice(i, 1);
+          lives = 0;
+          playSE('damage');
+          gameOver = true;
+          continue;
+        }
+
+        const distToSword = Math.hypot(h.x - sword.x, h.y - sword.y);
+        if (distToSword < h.radius + sword.length / 2) {
+          slashedBodies.push(new SlashedBody(h.x, h.y, h.type === 'nephilim'));
+
+          humans.splice(i, 1);
+          if (h.type === 'nephilim') {
+            score += GAME_CONFIG.SCORE_NEPHILIM;
+            playSE('kill_nephilim');
+          } else {
+            playSE('kill_human');
+          }
+          continue;
+        }
+
+        if (!h.returning && h.type !== 'nephilim') {
+          for (const angel of angels) {
+            const distToAngel = Math.hypot(h.x - angel.x, h.y - angel.y);
+            if (distToAngel < h.radius + angel.radius) {
+              h.returning = true;
+              angel.push();
+              playSE('return');
+              break;
+            }
+          }
+        }
+      }
+
+      draw(currentYear, isLastYears);
+      requestAnimationFrame(update);
+    }
+
+    function updateFloodEffect() {
+      floodTimer++;
+      floodWaveX += 12;
+
+      for (let i = humans.length - 1; i >= 0; i--) {
+        if (humans[i].x < floodWaveX) {
+          humans.splice(i, 1);
+        }
+      }
+    }
+
+    // --- 難易度選択画面の描画 ---
+    function drawDifficultyScreen() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawEnvironment();
+
+      ctx.fillStyle = 'rgba(10, 12, 22, 0.88)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 地面（芝生）
-      ctx.fillStyle = '#51cf66';
-      ctx.beginPath();
-      ctx.ellipse(230, 290, 260, 60, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = '#000000';
-      ctx.stroke();
-
-      // エデンの木（背景の装飾）
-      ctx.font = '50px sans-serif';
-      ctx.fillText('🌳', 40, 210);
-      ctx.fillText('🍎', 60, 160);
-      ctx.fillText('🌳', 360, 210);
-
-      if (!isPlaying && timeLeft === 30) {
-        // スタート画面
-        ctx.fillStyle = '#000000';
-        ctx.font = '900 22px "M PLUS Rounded 1c"';
-        ctx.textAlign = 'center';
-        ctx.fillText('人間とヘビは ❌ 追い返そう！', canvas.width / 2, 120);
-        ctx.fillText('動物たちは ⭕ 入れてあげよう！', canvas.width / 2, 160);
-        
-        ctx.fillStyle = '#ff3131';
-        ctx.font = '900 20px "M PLUS Rounded 1c"';
-        ctx.fillText('ボタンを押してスタート！', canvas.width / 2, 230);
-        return;
-      }
-
-      if (!isPlaying && timeLeft <= 0) {
-        // タイムアップ画面
-        ctx.fillStyle = '#000000';
-        ctx.font = '900 32px "M PLUS Rounded 1c"';
-        ctx.textAlign = 'center';
-        ctx.fillText('TIME UP!', canvas.width / 2, 120);
-
-        ctx.fillStyle = '#ff5757';
-        ctx.font = '900 26px "M PLUS Rounded 1c"';
-        ctx.fillText(`SCORE: ${score}`, canvas.width / 2, 180);
-
-        ctx.fillStyle = '#2b2b2b';
-        ctx.font = '900 18px "M PLUS Rounded 1c"';
-        ctx.fillText('ボタンを押してもう一度あそぶ', canvas.width / 2, 230);
-        return;
-      }
-
-      // 天使（判定者）の表示
-      ctx.font = '40px sans-serif';
-      ctx.fillText('👼', 230 - 140, 90);
-
-      // 登場キャラクターの表示
-      ctx.font = '90px sans-serif';
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 28px sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(currentGuest.emoji, canvas.width / 2, 210);
+      ctx.fillText(getText('selectDifficulty'), canvas.width / 2, 85);
 
-      // キャラクター名吹き出し
-      ctx.fillStyle = '#ffffff';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.roundRect(110, 30, 240, 45, 10);
-      ctx.fill();
-      ctx.stroke();
+      for (const btn of diffButtons) {
+        ctx.save();
+        ctx.fillStyle = btn.color;
+        ctx.beginPath();
+        ctx.roundRect(150, btn.y, 500, btn.height, 12);
+        ctx.fill();
 
-      ctx.fillStyle = '#000000';
-      ctx.font = '900 18px "M PLUS Rounded 1c"';
-      ctx.fillText(`${currentGuest.name} が ${currentGuest.message}`, canvas.width / 2, 60);
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
-      // フィードバック表示
-      if (feedbackMessage) {
-        ctx.fillStyle = feedbackColor;
-        ctx.font = '900 16px "M PLUS Rounded 1c"';
-        ctx.fillText(feedbackMessage, canvas.width / 2, 275);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(getText(btn.keyName), 175, btn.y + 36);
+
+        ctx.font = '13px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(getText(btn.keyDesc), 630, btn.y + 36);
+
+        ctx.restore();
       }
     }
 
-    // ゲーム終了
-    function endGame() {
-      isPlaying = false;
-      clearInterval(gameInterval);
-      draw();
+    // --- メイン描画 ---
+    function draw(currentYear, isLastYears) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawEnvironment();
+
+      for (const h of humans) {
+        h.draw();
+      }
+
+      for (const sb of slashedBodies) {
+        sb.draw();
+      }
+
+      if (!gameClear) {
+        ctx.beginPath();
+        ctx.moveTo(angels[0].x, angels[0].y);
+        ctx.lineTo(angels[1].x, angels[1].y);
+        ctx.strokeStyle = 'rgba(255, 235, 59, 0.25)';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        drawSword();
+      }
+
+      for (const angel of angels) {
+        angel.draw();
+      }
+
+      if (isDescending) {
+        ctx.save();
+        for (const angel of angels) {
+          const rayGrad = ctx.createLinearGradient(angel.x, 0, angel.x, angel.y);
+          rayGrad.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+          rayGrad.addColorStop(1, 'rgba(255, 255, 200, 0.0)');
+          ctx.fillStyle = rayGrad;
+          ctx.fillRect(angel.x - 25, 0, 50, angel.y);
+        }
+        ctx.restore();
+      }
+
+      if (gameClear) {
+        ctx.strokeStyle = 'rgba(120, 180, 255, 0.6)';
+        ctx.lineWidth = 2;
+        for (const drop of rainDrops) {
+          drop.y += drop.speed;
+          drop.x -= 3;
+          if (drop.y > canvas.height) drop.y = -20;
+          if (drop.x < 0) drop.x = canvas.width;
+
+          ctx.beginPath();
+          ctx.moveTo(drop.x, drop.y);
+          ctx.lineTo(drop.x - 5, drop.y + drop.length);
+          ctx.stroke();
+        }
+
+        const grad = ctx.createLinearGradient(floodWaveX - 200, 0, floodWaveX, 0);
+        grad.addColorStop(0, 'rgba(10, 50, 120, 0.95)');
+        grad.addColorStop(0.8, 'rgba(28, 110, 210, 0.85)');
+        grad.addColorStop(1, 'rgba(150, 220, 255, 0.9)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(-200, 0);
+        ctx.lineTo(floodWaveX, 0);
+        for (let y = 0; y <= canvas.height; y += 20) {
+          const waveOffset = Math.sin(y * 0.05 + floodTimer * 0.2) * 20;
+          ctx.lineTo(floodWaveX + waveOffset, y);
+        }
+        ctx.lineTo(-200, canvas.height);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // UI描画
+      ctx.fillStyle = '#fff';
+      ctx.font = '15px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(`${getText('score')}: ${score}`, 20, 30);
+      ctx.fillText(`${getText('lives')}: ${'❤️'.repeat(lives)}`, 20, 55);
+
+      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffd700';
+      ctx.font = 'bold 16px sans-serif';
+      ctx.fillText(`${currentYear} / ${GAME_CONFIG.TOTAL_YEARS} ${getText('yearsProgress')}`, 280, 30);
+
+      if (isLastYears && !gameClear) {
+        ctx.fillStyle = '#ff1744';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText(getText('warningNephilim', GAME_CONFIG.NEPHILIM_YEARS), 280, 52);
+      }
+
+      // プログレスバー
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.fillRect(280, 58, 250, 8);
+      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffd700';
+      ctx.fillRect(280, 58, (elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * 250, 8);
+
+      // ゲームオーバー画面
+      if (gameOver) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff5252';
+        ctx.font = 'bold 32px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(getText('gameOverTitle'), canvas.width / 2, canvas.height / 2 - 20);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = '18px sans-serif';
+        ctx.fillText(getText('gameOverDesc', score, currentYear), canvas.width / 2, canvas.height / 2 + 20);
+        ctx.font = '14px sans-serif';
+        ctx.fillText(getText('gameOverRetry'), canvas.width / 2, canvas.height / 2 + 60);
+      }
+
+      // ゲームクリア画面
+      if (gameClear && floodWaveX > canvas.width + 100) {
+        ctx.fillStyle = 'rgba(5, 15, 35, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 32px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(getText('gameClearTitle', GAME_CONFIG.TOTAL_YEARS), canvas.width / 2, canvas.height / 2 - 30);
+
+        ctx.fillStyle = '#4fc3f7';
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(getText('gameClearDesc'), canvas.width / 2, canvas.height / 2 + 10);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = '18px sans-serif';
+        ctx.fillText(getText('gameClearScore', score), canvas.width / 2, canvas.height / 2 + 50);
+      }
     }
 
-    // イベントリスナー
-    btnWelcome.addEventListener('click', () => handleChoice('welcome'));
-    btnExpel.addEventListener('click', () => handleChoice('expel'));
-
-    // 初期化描画
-    draw();
+    setLanguage('kanji');
+    update();
   </script>
-
 </body>
 </html>
