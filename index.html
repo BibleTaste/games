@@ -55,6 +55,7 @@
       display: inline-block;
       box-shadow: 0 4px 0 #b32020;
       font-size: 1rem;
+      cursor: pointer;
     }
 
     /* ゲームリストのコンテナ */
@@ -125,6 +126,7 @@
       box-shadow: 0 5px 0 #000000;
       box-sizing: border-box;
       transition: all 0.1s;
+      cursor: pointer;
     }
 
     .play-btn:active {
@@ -135,6 +137,19 @@
     /* テーマ別のボタン色カスタマイズ */
     .card-ark .play-btn { background-color: #ff66c4; }
     .card-eden .play-btn { background-color: #00e676; color: #000; }
+
+    /* Sound Switch (ON/OFF Control) */
+    .sound-toggle {
+      margin-top: 10px;
+      background: #392c6e;
+      border: 2px solid #ffde59;
+      color: #ffde59;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
     /* フッター */
     footer {
@@ -151,6 +166,7 @@
   <header>
     <h1>BIBLE TASTE<br>GAMES</h1>
     <div class="subtitle">🕹️ わくわくゲームセンター 🕹️</div>
+    <button id="soundBtn" class="sound-toggle">🎵 音声を有効化</button>
   </header>
 
   <main class="game-container">
@@ -178,6 +194,123 @@
   <footer>
     <p>&copy; BIBLE TASTE GAMES All Rights Reserved.</p>
   </footer>
+
+  <script>
+    // AudioContext の生成
+    let audioCtx = null;
+    let isBGMPlaying = false;
+    let bgmInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // 8bit風ボタン決定音（ピピッと上昇音）
+    function playClickSound() {
+      if (!audioCtx) return;
+      
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = 'square'; // 矩形波でファミコンらしさを演出
+      osc.frequency.setValueAtTime(523.25, now); // C5
+      osc.frequency.setValueAtTime(1046.50, now + 0.06); // C6
+
+      gain.gain.setValueAtTime(0.1, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.15);
+    }
+
+    // 8bit風ポップなBGMループ生成
+    const bgmNotes = [
+      261.63, 329.63, 392.00, 523.25, // C E G C
+      293.66, 349.23, 440.00, 587.33, // D F A D
+      329.63, 392.00, 493.88, 659.25, // E G B E
+      349.23, 440.00, 523.25, 698.46  // F A C F
+    ];
+    let noteIndex = 0;
+
+    function startBGM() {
+      if (isBGMPlaying) return;
+      isBGMPlaying = true;
+      document.getElementById('soundBtn').textContent = '🔊 SOUND: ON';
+
+      bgmInterval = setInterval(() => {
+        if (!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'triangle'; // マイルドな三角波
+        osc.frequency.setValueAtTime(bgmNotes[noteIndex], now);
+
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.005, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.12);
+
+        noteIndex = (noteIndex + 1) % bgmNotes.length;
+      }, 150);
+    }
+
+    function stopBGM() {
+      clearInterval(bgmInterval);
+      isBGMPlaying = false;
+      document.getElementById('soundBtn').textContent = '🔇 SOUND: OFF';
+    }
+
+    // イベント設定
+    document.addEventListener('click', () => {
+      initAudio();
+      if (!isBGMPlaying) {
+        startBGM();
+      }
+    }, { once: true });
+
+    // 音声オン・オフ切り替えボタン
+    const soundBtn = document.getElementById('soundBtn');
+    soundBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      initAudio();
+      if (isBGMPlaying) {
+        stopBGM();
+      } else {
+        startBGM();
+      }
+    });
+
+    // 「遊ぶ」ボタンクリック時に決定音を鳴らしてから遷移
+    const playButtons = document.querySelectorAll('.play-btn');
+    playButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetUrl = btn.getAttribute('href');
+        initAudio();
+        playClickSound();
+
+        // 効果音が鳴り終わるタイミングでページ遷移
+        setTimeout(() => {
+          window.location.href = targetUrl;
+        }, 150);
+      });
+    });
+  </script>
 
 </body>
 </html>
