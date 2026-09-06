@@ -4,16 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>エデンの園：防衛戦</title>
+  <!-- index.html と同じ Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Yuji+Mai&family=M+PLUS+Rounded+1c:wght@700;900&display=swap" rel="stylesheet">
+  
   <style>
     * {
       box-sizing: border-box;
     }
+    
+    /* index.html と統一した全体のスタイル */
     body {
       margin: 0;
-      padding: 10px;
-      background-color: #0c0d14;
-      color: #fff;
-      font-family: sans-serif;
+      padding: 20px 10px;
+      background-color: #1b153a; /* ポップな濃いパープル */
+      color: #ffffff;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -22,14 +27,27 @@
       overflow-x: hidden;
       user-select: none;
       -webkit-user-select: none;
+      background-image: 
+        radial-gradient(#392c6e 15%, transparent 16%),
+        radial-gradient(#392c6e 15%, transparent 16%);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
     }
+
+    /* ヘッダー・タイトル */
     h1 {
-      margin: 5px 0;
-      font-size: 1.3rem;
-      color: #ffd700;
-      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      font-family: 'Press Start 2P', cursive, sans-serif;
+      font-size: 1.8rem;
+      color: #ffde59; /* レトロイエロー */
+      text-shadow: 
+        3px 3px 0px #ff3131, 
+        6px 6px 0px #000000;
+      letter-spacing: 1px;
+      margin: 0 0 15px 0;
+      line-height: 1.3;
       text-align: center;
     }
+
     #game-container {
       position: relative;
       width: 100%;
@@ -37,26 +55,30 @@
       display: flex;
       justify-content: center;
     }
+
+    /* Canvas をレトロゲームカード風の黒枠＋シャドウに修正 */
     canvas {
       width: 100%;
       height: auto;
       max-width: 800px;
-      border: 2px solid #ffd700;
-      border-radius: 8px;
-      box-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+      border: 5px solid #000000;
+      border-radius: 20px;
+      box-shadow: 6px 6px 0px #000000;
       background: radial-gradient(circle at 80% 50%, #1a233a 0%, #090a10 100%);
       touch-action: none;
       aspect-ratio: 800 / 500;
     }
+
     .controls-panel {
-      margin-top: 10px;
+      margin-top: 15px;
       width: 100%;
       max-width: 800px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
+
     .button-group {
       display: flex;
       flex-wrap: wrap;
@@ -65,48 +87,68 @@
       gap: 10px;
       width: 100%;
     }
+
+    /* index.html のボタンデザインと統一 */
     .restart-btn {
-      background: linear-gradient(135deg, #ffd700, #ff9800);
-      color: #000;
-      border: none;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      border-radius: 20px;
+      background-color: #ff66c4;
+      color: #ffffff;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-weight: 900;
+      font-size: 0.95rem;
+      padding: 8px 18px;
+      border: 3px solid #000000;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 0 #000000;
+      transition: all 0.1s;
     }
+
     .restart-btn:active {
-      transform: scale(0.95);
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #000000;
     }
+
     .lang-group {
       display: flex;
-      gap: 5px;
+      gap: 6px;
     }
+
     .lang-btn {
-      background: #2a2d3d;
-      color: #aaa;
-      border: 1px solid #555;
+      background-color: #392c6e;
+      color: #ffffff;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-weight: 900;
+      border: 2px solid #ffde59;
       padding: 6px 12px;
       font-size: 0.85rem;
-      border-radius: 15px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      box-shadow: 0 3px 0 #000000;
+      transition: all 0.1s;
     }
+
     .lang-btn.active {
-      background: #00e5ff;
-      color: #000;
-      font-weight: bold;
-      border-color: #00e5ff;
-      box-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+      background-color: #ffde59;
+      color: #000000;
+      border-color: #000000;
+      box-shadow: 0 3px 0 #000000;
     }
+
+    .lang-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #000000;
+    }
+
     .info {
-      font-size: 0.8rem;
-      color: #ccc;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #ffde59;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
       text-align: center;
       line-height: 1.4;
-      padding: 0 5px;
+      border: 1px solid rgba(255, 222, 89, 0.3);
     }
   </style>
 </head>
@@ -667,10 +709,10 @@
 
     // --- 難易度選択ボタン領域判定 ---
     const diffButtons = [
-      { id: '1', keyName: 'level1Name', keyDesc: 'level1Desc', y: 150, height: 60, color: '#4caf50' },
-      { id: '2', keyName: 'level2Name', keyDesc: 'level2Desc', y: 225, height: 60, color: '#0288d1' },
-      { id: '3', keyName: 'level3Name', keyDesc: 'level3Desc', y: 300, height: 60, color: '#f57c00' },
-      { id: 'angel', keyName: 'levelAngelName', keyDesc: 'levelAngelDesc', y: 375, height: 60, color: '#d32f2f' }
+      { id: '1', keyName: 'level1Name', keyDesc: 'level1Desc', y: 150, height: 60, color: '#00e676' },
+      { id: '2', keyName: 'level2Name', keyDesc: 'level2Desc', y: 225, height: 60, color: '#00c2cb' },
+      { id: '3', keyName: 'level3Name', keyDesc: 'level3Desc', y: 300, height: 60, color: '#ff66c4' },
+      { id: 'angel', keyName: 'levelAngelName', keyDesc: 'levelAngelDesc', y: 375, height: 60, color: '#ff3131' }
     ];
 
     // --- ドラッグ & タップ操作 ---
@@ -1232,8 +1274,8 @@
       ctx.fillStyle = 'rgba(10, 12, 22, 0.88)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#ffd700';
-      ctx.font = 'bold 28px sans-serif';
+      ctx.fillStyle = '#ffde59';
+      ctx.font = 'bold 26px "M PLUS Rounded 1c", sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(getText('selectDifficulty'), canvas.width / 2, 85);
 
@@ -1244,16 +1286,16 @@
         ctx.roundRect(150, btn.y, 500, btn.height, 12);
         ctx.fill();
 
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 4;
         ctx.stroke();
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 20px sans-serif';
+        ctx.font = '900 20px "M PLUS Rounded 1c", sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText(getText(btn.keyName), 175, btn.y + 36);
 
-        ctx.font = '13px sans-serif';
+        ctx.font = '700 13px "M PLUS Rounded 1c", sans-serif';
         ctx.textAlign = 'right';
         ctx.fillText(getText(btn.keyDesc), 630, btn.y + 36);
 
@@ -1337,25 +1379,25 @@
 
       // UI描画
       ctx.fillStyle = '#fff';
-      ctx.font = '15px sans-serif';
+      ctx.font = '900 15px "M PLUS Rounded 1c", sans-serif';
       ctx.textAlign = 'left';
       ctx.fillText(`${getText('score')}: ${score}`, 20, 30);
       ctx.fillText(`${getText('lives')}: ${'❤️'.repeat(lives)}`, 20, 55);
 
-      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffd700';
-      ctx.font = 'bold 16px sans-serif';
+      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffde59';
+      ctx.font = '900 16px "M PLUS Rounded 1c", sans-serif';
       ctx.fillText(`${currentYear} / ${GAME_CONFIG.TOTAL_YEARS} ${getText('yearsProgress')}`, 280, 30);
 
       if (isLastYears && !gameClear) {
         ctx.fillStyle = '#ff1744';
-        ctx.font = 'bold 12px sans-serif';
+        ctx.font = '900 12px "M PLUS Rounded 1c", sans-serif';
         ctx.fillText(getText('warningNephilim', GAME_CONFIG.NEPHILIM_YEARS), 280, 52);
       }
 
       // プログレスバー
       ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
       ctx.fillRect(280, 58, 250, 8);
-      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffd700';
+      ctx.fillStyle = isLastYears ? '#ff1744' : '#ffde59';
       ctx.fillRect(280, 58, (elapsedTime / GAME_CONFIG.TOTAL_TIME_SEC) * 250, 8);
 
       // ゲームオーバー画面
@@ -1364,14 +1406,14 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         ctx.fillStyle = '#ff5252';
-        ctx.font = 'bold 32px sans-serif';
+        ctx.font = '900 32px "M PLUS Rounded 1c", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(getText('gameOverTitle'), canvas.width / 2, canvas.height / 2 - 20);
 
         ctx.fillStyle = '#fff';
-        ctx.font = '18px sans-serif';
+        ctx.font = '700 18px "M PLUS Rounded 1c", sans-serif';
         ctx.fillText(getText('gameOverDesc', score, currentYear), canvas.width / 2, canvas.height / 2 + 20);
-        ctx.font = '14px sans-serif';
+        ctx.font = '700 14px "M PLUS Rounded 1c", sans-serif';
         ctx.fillText(getText('gameOverRetry'), canvas.width / 2, canvas.height / 2 + 60);
       }
 
@@ -1380,17 +1422,17 @@
         ctx.fillStyle = 'rgba(5, 15, 35, 0.85)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#ffd700';
-        ctx.font = 'bold 32px sans-serif';
+        ctx.fillStyle = '#ffde59';
+        ctx.font = '900 32px "M PLUS Rounded 1c", sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(getText('gameClearTitle', GAME_CONFIG.TOTAL_YEARS), canvas.width / 2, canvas.height / 2 - 30);
 
         ctx.fillStyle = '#4fc3f7';
-        ctx.font = 'bold 18px sans-serif';
+        ctx.font = '700 18px "M PLUS Rounded 1c", sans-serif';
         ctx.fillText(getText('gameClearDesc'), canvas.width / 2, canvas.height / 2 + 10);
 
         ctx.fillStyle = '#fff';
-        ctx.font = '18px sans-serif';
+        ctx.font = '700 18px "M PLUS Rounded 1c", sans-serif';
         ctx.fillText(getText('gameClearScore', score), canvas.width / 2, canvas.height / 2 + 50);
       }
     }
