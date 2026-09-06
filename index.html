@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JW TASTE GAMES</title>
+  <!-- レトロゲーム風フォント（Google Fonts） -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Yuji+Mai&family=M+PLUS+Rounded+1c:wght@700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* 全体のスタイル設定 */
+    body {
+      background-color: #1b153a; /* ポップな濃いパープル */
+      color: #ffffff;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      background-image: 
+        radial-gradient(#392c6e 15%, transparent 16%),
+        radial-gradient(#392c6e 15%, transparent 16%);
+      background-size: 30px 30px;
+      background-position: 0 0, 15px 15px;
+    }
+
+    /* ヘッダー・タイトル */
+    header {
+      margin-top: 40px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Press Start 2P', cursive, sans-serif;
+      font-size: 2.2rem;
+      color: #ffde59; /* レトロイエロー */
+      text-shadow: 
+        4px 4px 0px #ff3131, 
+        8px 8px 0px #000000;
+      letter-spacing: 2px;
+      margin: 0 0 10px 0;
+      line-height: 1.3;
+    }
+
+    .subtitle {
+      background-color: #ff5757;
+      color: #ffffff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: inline-block;
+      box-shadow: 0 4px 0 #b32020;
+      font-size: 1rem;
+    }
+
+    /* ゲームリストのコンテナ */
+    .game-container {
+      width: 90%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    /* 各ゲームのカード枠 */
+    .game-card {
+      background: #ffffff;
+      color: #333333;
+      border: 5px solid #000000;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 6px 6px 0px #000000;
+      transition: transform 0.1s, box-shadow 0.1s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* カードホバー時のアニメーション */
+    .game-card:hover {
+      transform: translate(-3px, -3px);
+      box-shadow: 9px 9px 0px #000000;
+    }
+
+    .game-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin: 0 0 10px 0;
+      color: #2b2b2b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .game-title::before {
+      content: '🎮';
+      font-size: 1.4rem;
+    }
+
+    .game-description {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #555555;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    /* プレイボタン */
+    .play-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background-color: #00c2cb;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 1.2rem;
+      padding: 12px 0;
+      border: 4px solid #000000;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 5px 0 #000000;
+      box-sizing: border-box;
+      transition: all 0.1s;
+    }
+
+    .play-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #000000;
+    }
+
+    /* テーマ別のボタン色カスタマイズ */
+    .card-ark .play-btn { background-color: #ff66c4; }
+    .card-eden .play-btn { background-color: #00e676; color: #000; }
+
+    /* フッター */
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 0.8rem;
+      color: #a0a0a0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>JW TASTE<br>GAMES</h1>
+    <div class="subtitle">🕹️ わくわくゲームセンター 🕹️</div>
+  </header>
+
+  <main class="game-container">
+
+    <!-- ゲーム1: ARK GAME -->
+    <div class="game-card card-ark">
+      <h2 class="game-title">ノアの箱舟ゲーム</h2>
+      <p class="game-description">
+        やってきた動物を乗せるか、乗せないか選ぶだけの簡単ゲームだよ
+      </p>
+      <a href="ark_game.html" class="play-btn">遊ぶ (PLAY)</a>
+    </div>
+
+    <!-- ゲーム2: EDEN GAME -->
+    <div class="game-card card-eden">
+      <h2 class="game-title">エデンの園ゲーム</h2>
+      <p class="game-description">
+        エデンの園にやってきた人たちを天使で追い返すだけの簡単ゲームだよ
+      </p>
+      <a href="eden_game.html" class="play-btn">遊ぶ (PLAY)</a>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>&copy; BIBLE TASTE GAMES All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>

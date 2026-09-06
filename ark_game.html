@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+ <title>ARK GAME - JW TASTE GAMES</title>
+ <!-- レトロゲーム風フォント (Google Fonts) -->
+ <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=M+PLUS+Rounded+1c:wght@700;900&display=swap" rel="stylesheet">
+ 
+ <style>
+ * {
+   box-sizing: border-box;
+ }
+
+ /* 全体のスタイル（index.htmlと統一） */
+ body {
+   background-color: #1b153a; /* ポップな濃いパープル */
+   color: #333;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+   margin: 0;
+   padding: 15px 10px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-height: 100vh;
+   background-image: 
+     radial-gradient(#392c6e 15%, transparent 16%),
+     radial-gradient(#392c6e 15%, transparent 16%);
+   background-size: 30px 30px;
+   background-position: 0 0, 15px 15px;
+   overflow-x: hidden;
+   transition: background-color 0.5s ease;
+ }
+
+ body.success-bg {
+   background-color: #0d47a1;
+ }
+
+ body.error-bg {
+   background-color: #212121 !important;
+ }
+
+ /* メインコンテナ（白カード枠） */
+ .main-card {
+   background: #ffffff;
+   border: 5px solid #000000;
+   border-radius: 20px;
+   padding: 20px 15px;
+   box-shadow: 6px 6px 0px #000000;
+   width: 100%;
+   max-width: 650px;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-bottom: 20px;
+ }
+
+ /* タイトル */
+ h1 {
+   font-family: 'Press Start 2P', cursive, sans-serif;
+   font-size: 1.8rem;
+   color: #ffde59; /* レトロイエロー */
+   text-shadow: 3px 3px 0px #ff3131, 6px 6px 0px #000000;
+   letter-spacing: 1px;
+   margin: 0 0 15px 0;
+   text-align: center;
+   line-height: 1.3;
+ }
+
+ /* 戻るボタン */
+ .back-btn {
+   display: inline-block;
+   background-color: #ff66c4;
+   color: #ffffff;
+   font-weight: 900;
+   font-size: 0.95rem;
+   padding: 8px 18px;
+   border: 3.5px solid #000000;
+   border-radius: 12px;
+   text-decoration: none;
+   box-shadow: 0 4px 0 #000000;
+   margin-bottom: 15px;
+   transition: all 0.1s;
+ }
+
+ .back-btn:active {
+   transform: translateY(3px);
+   box-shadow: 0 1px 0 #000000;
+ }
+
+ /* 言語切替エリア */
+ .lang-switch-container {
+   margin-bottom: 12px;
+   background: #f0f0f0;
+   border: 3px solid #000000;
+   padding: 4px;
+   border-radius: 15px;
+   display: flex;
+   gap: 4px;
+ }
+
+ .lang-btn {
+   background: none;
+   border: 2px solid transparent;
+   padding: 4px 10px;
+   border-radius: 10px;
+   cursor: pointer;
+   font-size: 0.8rem;
+   font-weight: 900;
+   color: #555;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+ }
+
+ .lang-btn.active {
+   background-color: #00c2cb;
+   color: white;
+   border-color: #000000;
+ }
+
+ /* 説明テキスト */
+ .instructions {
+   font-size: 0.85rem;
+   margin: 0 0 12px 0;
+   color: #333;
+   line-height: 1.4;
+   font-weight: 700;
+   background-color: #fff9c4;
+   border: 3px solid #000000;
+   border-radius: 12px;
+   padding: 8px 12px;
+   text-align: center;
+   width: 100%;
+ }
+
+ body.error-bg .instructions {
+   background-color: #424242;
+   color: #ffffff;
+ }
+
+ /* レベル選択エリア */
+ .level-container {
+   margin-bottom: 12px;
+   display: flex;
+   justify-content: center;
+   gap: 6px;
+   flex-wrap: wrap;
+ }
+
+ .level-btn {
+   background-color: #ffffff;
+   border: 3px solid #000000;
+   color: #000000;
+   font-size: 0.8rem;
+   font-weight: 900;
+   padding: 6px 10px;
+   border-radius: 10px;
+   cursor: pointer;
+   box-shadow: 0 3px 0 #000000;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+ }
+
+ .level-btn.active {
+   background-color: #ffde59;
+   transform: translateY(2px);
+   box-shadow: 0 1px 0 #000000;
+ }
+
+ /* 箱舟エリア */
+ .ark-wrapper {
+   position: relative;
+   width: 100%;
+   margin-bottom: 12px;
+ }
+
+ .ark-container {
+   background-color: #8d6e63;
+   border: 4px solid #000000;
+   border-radius: 16px;
+   padding: 10px;
+   box-shadow: 4px 4px 0px #000000;
+   transition: transform 2s ease, opacity 2s ease;
+ }
+
+ .ark-container.sinking {
+   transform: translateY(150px) rotate(15deg);
+   opacity: 0.2;
+ }
+
+ .ark-title {
+   color: #fff;
+   font-size: 0.95rem;
+   font-weight: 900;
+   margin-bottom: 8px;
+   text-shadow: 2px 2px 0px #000;
+ }
+
+ .ark-grid-scroll {
+   max-height: 28vh;
+   min-height: 120px;
+   overflow-y: auto;
+   padding: 4px;
+   border-radius: 8px;
+   background-color: rgba(0, 0, 0, 0.25);
+   border: 2px solid #000;
+ }
+
+ .ark-grid-scroll::-webkit-scrollbar {
+   width: 8px;
+ }
+
+ .ark-grid-scroll::-webkit-scrollbar-thumb {
+   background: #ffde59;
+   border-radius: 4px;
+   border: 2px solid #000;
+ }
+
+ .ark-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+   gap: 6px;
+ }
+
+ .ark-card {
+   background-color: #ffffff;
+   border: 2.5px solid #000000;
+   border-radius: 10px;
+   padding: 4px 2px;
+   font-size: 0.8rem;
+   text-align: center;
+   color: #333;
+   font-weight: 900;
+ }
+
+ .ark-card .emoji {
+   font-size: 1.4rem;
+   display: block;
+   line-height: 1.1;
+ }
+
+ .animal-name {
+   font-weight: 900;
+   margin-top: 2px;
+   font-size: 0.75rem;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+ }
+
+ .genders {
+   margin-top: 3px;
+   font-size: 0.7rem;
+   font-weight: 900;
+   display: flex;
+   justify-content: center;
+   gap: 3px;
+ }
+
+ .gender-male-on {
+   color: #ffffff;
+   background-color: #29b6f6;
+   padding: 1px 4px;
+   border-radius: 6px;
+   border: 1.5px solid #000;
+ }
+
+ .gender-female-on {
+   color: #ffffff;
+   background-color: #ab47bc;
+   padding: 1px 4px;
+   border-radius: 6px;
+   border: 1.5px solid #000;
+ }
+
+ .gender-off {
+   color: #888;
+   background-color: #e0e0e0;
+   padding: 1px 4px;
+   border-radius: 6px;
+   border: 1.5px solid #aaa;
+   opacity: 0.7;
+ }
+
+ .count-text {
+   font-size: 0.65rem;
+ }
+
+ /* メッセージエリア */
+ .message {
+   font-size: 1.05rem;
+   font-weight: 900;
+   min-height: 2em;
+   margin-bottom: 8px;
+   text-align: center;
+ }
+
+ .success { color: #2e7d32; }
+ .error { color: #d32f2f; }
+
+ .clear-time {
+   font-size: 1.2rem;
+   color: #ffffff;
+   background-color: #ff66c4;
+   border: 3px solid #000000;
+   border-radius: 12px;
+   padding: 6px 16px;
+   margin: 6px auto;
+   display: inline-block;
+   font-weight: 900;
+   box-shadow: 3px 3px 0 #000;
+   animation: popIn 0.3s ease;
+ }
+
+ @keyframes popIn {
+   0% { transform: scale(0.8); opacity: 0; }
+   100% { transform: scale(1); opacity: 1; }
+ }
+
+ /* ステージ (訪問カード) */
+ .stage {
+   height: 105px;
+   position: relative;
+   width: 100%;
+   max-width: 320px;
+   margin: 0 auto 10px auto;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+ }
+
+ .visitor-card {
+   background-color: #ffffff;
+   border: 4px solid #000000;
+   border-radius: 16px;
+   width: 190px;
+   padding: 8px;
+   box-shadow: 4px 4px 0px #000000;
+   position: absolute;
+   transition: all 0.3s ease;
+   text-align: center;
+ }
+
+ .visitor-card.walk-in { animation: slideIn 0.3s forwards; }
+ .visitor-card.board-in { animation: moveToArk 0.4s forwards; }
+ .visitor-card.walk-out { animation: slideOut 0.4s forwards; }
+
+ @keyframes slideIn {
+   0% { transform: translateX(200px); opacity: 0; }
+   100% { transform: translateX(0); opacity: 1; }
+ }
+
+ @keyframes moveToArk {
+   0% { transform: translateY(0) scale(1); opacity: 1; }
+   100% { transform: translateY(-120px) scale(0.2); opacity: 0; }
+ }
+
+ @keyframes slideOut {
+   0% { transform: translateX(0); opacity: 1; }
+   100% { transform: translateX(-200px); opacity: 0; }
+ }
+
+ .visitor-emoji {
+   font-size: 2.4rem;
+   line-height: 1;
+ }
+
+ .visitor-name {
+   font-size: 0.95rem;
+   font-weight: 900;
+   margin-top: 4px;
+   color: #333;
+ }
+
+ /* ボタンエリア */
+ .action-btns {
+   display: flex;
+   justify-content: center;
+   gap: 12px;
+   margin-bottom: 12px;
+   width: 100%;
+   max-width: 380px;
+ }
+
+ .btn {
+   font-size: 1.1rem;
+   font-weight: 900;
+   padding: 12px 10px;
+   border-radius: 14px;
+   border: 4px solid #000000;
+   cursor: pointer;
+   box-shadow: 0 4px 0 #000000;
+   transition: transform 0.1s;
+   flex: 1;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+ }
+
+ .btn:active {
+   transform: translateY(3px);
+   box-shadow: 0 1px 0 #000000;
+ }
+
+ .btn:disabled {
+   opacity: 0.4;
+   cursor: not-allowed;
+   box-shadow: none;
+ }
+
+ .btn-board { background-color: #00e676; color: #000; }
+ .btn-reject { background-color: #ff5252; color: #fff; }
+
+ /* スタートボタン */
+ .btn-start {
+   background-color: #ffde59;
+   color: #000;
+   font-size: 1.25rem;
+   padding: 10px 40px;
+   border-radius: 16px;
+   border: 4px solid #000000;
+   cursor: pointer;
+   font-weight: 900;
+   box-shadow: 0 5px 0 #000000;
+   margin-bottom: 12px;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+   animation: pulse 1.5s infinite;
+ }
+
+ /* リセットボタン */
+ .btn-reset {
+   background-color: #00c2cb;
+   color: white;
+   border: 3px solid #000000;
+   padding: 8px 20px;
+   font-size: 0.9rem;
+   border-radius: 12px;
+   cursor: pointer;
+   font-weight: 900;
+   box-shadow: 0 3px 0 #000000;
+   font-family: 'M PLUS Rounded 1c', sans-serif;
+ }
+
+ @keyframes pulse {
+   0% { transform: scale(1); }
+   50% { transform: scale(1.04); }
+   100% { transform: scale(1); }
+ }
+
+ .rainbow {
+   display: none;
+   position: fixed;
+   top: 0;
+   left: 50%;
+   transform: translateX(-50%);
+   width: 100%;
+   height: 300px;
+   border-radius: 0 0 50% 50%;
+   background: radial-gradient(circle, rgba(255, 255, 255, 0) 40%,
+   rgba(255, 0, 0, 0.4) 45%,
+   rgba(255, 165, 0, 0.4) 50%,
+   rgba(255, 255, 0, 0.4) 55%,
+   rgba(0, 128, 0, 0.4) 60%,
+   rgba(0, 0, 255, 0.4) 65%,
+   rgba(238, 130, 238, 0.4) 70%);
+   pointer-events: none;
+   z-index: 10;
+ }
+
+ /* フッター */
+ footer {
+   margin-top: auto;
+   padding: 10px;
+   font-size: 0.8rem;
+   color: #a0a0a0;
+   text-align: center;
+ }
+
+ @media (min-width: 600px) {
+   h1 { font-size: 2.2rem; }
+   .ark-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+   .visitor-card { width: 220px; }
+ }
+ </style>
+</head>
+
+<body>
+
+ <div class="rainbow" id="rainbow"></div>
+
+ <main class="main-card">
+
+   <!-- トップに戻るボタン -->
+   <a href="index.html" class="back-btn">👈 ゲーム一覧に戻る</a>
+
+   <h1 id="ui-title">ARK GAME</h1>
+
+   <!-- 言語切り替えボタン -->
+   <div class="lang-switch-container">
+     <button class="lang-btn active" id="lang-ja" onclick="setLanguage('ja')">日本語</button>
+     <button class="lang-btn" id="lang-kana" onclick="setLanguage('kana')">ひらがな</button>
+     <button class="lang-btn" id="lang-en" onclick="setLanguage('en')">English</button>
+   </div>
+
+   <!-- レベル選択ボタン -->
+   <div class="level-container">
+     <button class="level-btn active" id="lvl-1" onclick="changeLevel(1)">レベル1 (4種)</button>
+     <button class="level-btn" id="lvl-2" onclick="changeLevel(2)">レベル2 (8種)</button>
+     <button class="level-btn" id="lvl-3" onclick="changeLevel(3)">レベル3 (16種)</button>
+     <button class="level-btn" id="lvl-4" onclick="changeLevel(4)">レベルノア (49種)</button>
+   </div>
+
+   <p class="instructions" id="ui-instructions"></p>
+
+   <!-- 箱舟エリア -->
+   <div class="ark-wrapper">
+     <div class="ark-container" id="ark-container">
+       <div class="ark-title" id="ui-ark-title">🚢 箱舟の中（乗せた数: <span id="count">0</span> / <span id="max-count">8</span>匹）</div>
+       <div class="ark-grid-scroll">
+         <div class="ark-grid" id="ark-grid"></div>
+       </div>
+     </div>
+   </div>
+
+   <!-- メッセージエリア -->
+   <div class="message" id="message"></div>
+   <div id="clear-time-display"></div>
+
+   <!-- 訪問中の動物（ステージ） -->
+   <div class="stage">
+     <div class="visitor-card" id="v-card">
+       <div class="visitor-emoji" id="v-emoji">❓</div>
+       <div class="visitor-name" id="v-name">...</div>
+     </div>
+   </div>
+
+   <!-- スタートボタン -->
+   <button class="btn-start" id="btn-start" onclick="startGame()">▶️ スタート！</button>
+
+   <!-- アクションボタン -->
+   <div class="action-btns">
+     <button class="btn btn-board" id="btn-board" onclick="handleChoice(true)">🚢 乗せる</button>
+     <button class="btn btn-reject" id="btn-reject" onclick="handleChoice(false)">👋 帰ってもらう</button>
+   </div>
+
+   <!-- 最初から遊ぶボタン -->
+   <button class="btn-reset" id="btn-reset" onclick="resetGame()">🔄 最初から遊ぶ</button>
+
+ </main>
+
+ <footer>
+   <p>&copy; JW TASTE GAMES All Rights Reserved.</p>
+ </footer>
+
+ <script>
+ // --- 効果音機能 (Web Audio API) ---
+ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+ function playSound(type) {
+  if (audioCtx.state === 'suspended') {
+   audioCtx.resume();
+  }
+
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  const now = audioCtx.currentTime;
+
+  if (type === 'appear') {
+   osc.type = 'sine';
+   osc.frequency.setValueAtTime(300, now);
+   osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+   gain.gain.setValueAtTime(0.3, now);
+   gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+   osc.start(now);
+   osc.stop(now + 0.08);
+
+  } else if (type === 'board') {
+   osc.type = 'triangle';
+   osc.frequency.setValueAtTime(523.25, now);
+   osc.frequency.setValueAtTime(659.25, now + 0.08);
+   osc.frequency.setValueAtTime(783.99, now + 0.16);
+   gain.gain.setValueAtTime(0.3, now);
+   gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+   osc.start(now);
+   osc.stop(now + 0.3);
+
+  } else if (type === 'reject') {
+   osc.type = 'sine';
+   osc.frequency.setValueAtTime(400, now);
+   osc.frequency.exponentialRampToValueAtTime(150, now + 0.12);
+   gain.gain.setValueAtTime(0.2, now);
+   gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+   osc.start(now);
+   osc.stop(now + 0.12);
+
+  } else if (type === 'win') {
+   const notes = [523.25, 659.25, 783.99, 1046.50];
+   notes.forEach((freq, idx) => {
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'triangle';
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    const startTime = now + idx * 0.12;
+    o.frequency.setValueAtTime(freq, startTime);
+    g.gain.setValueAtTime(0.3, startTime);
+    g.gain.linearRampToValueAtTime(0.01, startTime + 0.4);
+    o.start(startTime);
+    o.stop(startTime + 0.4);
+   });
+
+  } else if (type === 'lose') {
+   osc.type = 'sawtooth';
+   osc.frequency.setValueAtTime(150, now);
+   osc.frequency.linearRampToValueAtTime(40, now + 0.8);
+   gain.gain.setValueAtTime(0.4, now);
+   gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+   osc.start(now);
+   osc.stop(now + 0.8);
+  }
+ }
+
+ // 動物データ (合計 49 種類)
+ const allAnimals = [
+  // レベル1 (4種)
+  { id: "elephant", name: "ぞう",kanaName: "ぞう",enName: "Elephant", emoji: "🐘", maxMale: 1, maxFemale: 1 },
+  { id: "giraffe", name: "キリン",kanaName: "きりん",enName: "Giraffe",emoji: "🦒", maxMale: 1, maxFemale: 1 },
+  { id: "lion",name: "ライオン", kanaName: "らいおん", enName: "Lion", emoji: "🦁", maxMale: 1, maxFemale: 1 },
+  { id: "dog", name: "犬",kanaName: "いぬ",enName: "Dog",emoji: "🐶", maxMale: 1, maxFemale: 1 },
+
+  // レベル2で追加 (計8種)
+  { id: "gorilla", name: "ごりら",kanaName: "ごりら",enName: "Gorilla",emoji: "🦍", maxMale: 1, maxFemale: 1 },
+  { id: "rabbit",name: "ウサギ",kanaName: "うさぎ",enName: "Rabbit", emoji: "🐰", maxMale: 1, maxFemale: 1 },
+  { id: "cat", name: "猫",kanaName: "ねこ",enName: "Cat",emoji: "🐱", maxMale: 1, maxFemale: 1 },
+  { id: "dove",name: "鳩",kanaName: "はと",enName: "Dove", emoji: "🕊️", maxMale: 3, maxFemale: 4 }, // 清
+
+  // レベル3で追加 (計16種)
+  { id: "mouse", name: "ネズミ",kanaName: "ねずみ",enName: "Mouse",emoji: "🐭", maxMale: 1, maxFemale: 1 },
+  { id: "crocodile",name: "わに",kanaName: "わに",enName: "Crocodile", emoji: "🐊", maxMale: 1, maxFemale: 1 },
+  { id: "chicken", name: "鶏",kanaName: "にわとり", enName: "Chicken",emoji: "🐔", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "frog",name: "カエル",kanaName: "かえる",enName: "Frog", emoji: "🐸", maxMale: 1, maxFemale: 1 },
+  { id: "horse", name: "馬",kanaName: "うま",enName: "Horse",emoji: "🐴", maxMale: 1, maxFemale: 1 },
+  { id: "cow", name: "牛",kanaName: "うし",enName: "Cow",emoji: "🐮", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "pig", name: "豚",kanaName: "ぶた",enName: "Pig",emoji: "🐷", maxMale: 1, maxFemale: 1 },
+  { id: "panda", name: "パンダ",kanaName: "ぱんだ",enName: "Panda",emoji: "🐼", maxMale: 1, maxFemale: 1 },
+
+  // レベルノアで追加 (計49種)
+  { id: "nephilim", name: "ネフィリム", kanaName: "ねふぃりむ", enName: "Nephilim", emoji: "🧌", maxMale: 0, maxFemale: 0, isForbidden: true }, // お邪魔キャラ
+  { id: "sheep", name: "ひつじ",kanaName: "ひつじ",enName: "Sheep",emoji: "🐑", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "goat",name: "やぎ",kanaName: "やぎ",enName: "Goat", emoji: "🐐", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "moose", name: "ヘラジカ", kanaName: "へらじか", enName: "Moose",emoji: "🫎", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "deer",name: "シカ",kanaName: "しか",enName: "Deer", emoji: "🦌", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "eagle", name: "ワシ",kanaName: "わし",enName: "Eagle",emoji: "🦅", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "duck",name: "カモ",kanaName: "かも",enName: "Duck", emoji: "🦆", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "owl", name: "フクロウ", kanaName: "ふくろう", enName: "Owl",emoji: "🦉", maxMale: 3, maxFemale: 4 },// 清
+  { id: "flamingo", name: "フラミンゴ",kanaName: "ふらみんご",enName: "Flamingo",emoji: "🦩", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "peacock", name: "クジャク", kanaName: "くじゃく", enName: "Peacock", emoji: "🦚", maxMale: 3, maxFemale: 4 },
+  { id: "parrot",name: "インコ",kanaName: "いんこ",enName: "Parrot", emoji: "🦜", maxMale: 3, maxFemale: 4 },
+  { id: "fox", name: "きつね",kanaName: "きつね",enName: "Fox",emoji: "🦊", maxMale: 1, maxFemale: 1 },
+  { id: "bear",name: "くま",kanaName: "くま",enName: "Bear", emoji: "🐻", maxMale: 1, maxFemale: 1 },
+  { id: "koala", name: "コアラ",kanaName: "こあら",enName: "Koala",emoji: "🐨", maxMale: 1, maxFemale: 1 },
+  { id: "tiger", name: "トラ",kanaName: "とら",enName: "Tiger",emoji: "🐯", maxMale: 1, maxFemale: 1 },
+  { id: "monkey",name: "さる",kanaName: "さる",enName: "Monkey", emoji: "🐵", maxMale: 1, maxFemale: 1 },
+  { id: "hippo", name: "カバ",kanaName: "かば",enName: "Hippo",emoji: "🦛", maxMale: 1, maxFemale: 1 },
+  { id: "rhino", name: "サイ",kanaName: "さい",enName: "Rhino",emoji: "🦏", maxMale: 1, maxFemale: 1 },
+  { id: "kangaroo", name: "カンガルー",kanaName: "かんがるー",enName: "Kangaroo",emoji: "🦘", maxMale: 1, maxFemale: 1 },
+  { id: "llama", name: "ラマ",kanaName: "らま",enName: "Llama",emoji: "🦙", maxMale: 1, maxFemale: 1 },
+  { id: "sloth", name: "ナマケモノ",kanaName: "なまけもの",enName: "Sloth",emoji: "🦥", maxMale: 1, maxFemale: 1 },
+  { id: "otter", name: "カワウソ", kanaName: "かわうそ", enName: "Otter",emoji: "🦦", maxMale: 1, maxFemale: 1 },
+  { id: "skunk", name: "スカンク", kanaName: "すかんく", enName: "Skunk",emoji: "🦨", maxMale: 1, maxFemale: 1 },
+  { id: "badger",name: "アナグマ", kanaName: "あなぐま", enName: "Badger", emoji: "🦡", maxMale: 1, maxFemale: 1 },
+  { id: "hedgehog", name: "ハリネズミ",kanaName: "はりねずみ",enName: "Hedgehog",emoji: "🦔", maxMale: 1, maxFemale: 1 },
+  { id: "bat", name: "コウモリ", kanaName: "こうもり", enName: "Bat",emoji: "🦇", maxMale: 1, maxFemale: 1 },
+  { id: "chipmunk", name: "リス",kanaName: "りす",enName: "Squirrel", emoji: "🐿️", maxMale: 1, maxFemale: 1 },
+  { id: "donkey",name: "ロバ",kanaName: "ろば",enName: "Donkey", emoji: "🫏", maxMale: 1, maxFemale: 1 },
+  { id: "zebra", name: "シマウマ", kanaName: "しまうま", enName: "Zebra",emoji: "🦓", maxMale: 1, maxFemale: 1 },
+  { id: "turtle",name: "カメ",kanaName: "かめ",enName: "Turtle", emoji: "🐢", maxMale: 1, maxFemale: 1 },
+  { id: "lizard",name: "トカゲ",kanaName: "とかげ",enName: "Lizard", emoji: "🦎", maxMale: 1, maxFemale: 1 },
+  { id: "snake", name: "ヘビ",kanaName: "へび",enName: "Snake",emoji: "🐍", maxMale: 1, maxFemale: 1 },
+  { id: "butterfly",name: "チョウ",kanaName: "ちょう",enName: "Butterfly",emoji: "🦋", maxMale: 1, maxFemale: 1 },
+  { id: "bee", name: "ミツバチ", kanaName: "みつばち", enName: "Bee", emoji: "🐝", maxMale: 1, maxFemale: 1 },
+  { id: "ladybug", name: "テントウムシ",kanaName:"てんとうむし",enName:"Ladybug",emoji: "🐞", maxMale: 1, maxFemale: 1 },
+  { id: "caterpillar",name:"イモムシ",kanaName: "いもむし", enName: "Caterpillar",emoji: "🐛", maxMale: 1, maxFemale: 1 },
+  { id: "camel", name: "ラクダ",kanaName: "らくだ",enName: "Camel",emoji: "🐪", maxMale: 1, maxFemale: 1 },
+  { id: "swan",name: "白鳥",kanaName: "はくちょう",enName: "Swan", emoji: "🦢", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "hawk",name: "鷹", kanaName: "たか",enName: "Hawk", emoji: "🦅", maxMale: 3, maxFemale: 4 }, // 清
+  { id: "penguin", name: "ペンギン",kanaName: "ぺんぎん", enName: "Penguin",emoji: "🐧", maxMale: 1, maxFemale: 1 },
+  { id: "dodo",name: "ドードー",kanaName: "どーどー", enName: "Dodo", emoji: "🦤", maxMale: 1, maxFemale: 1 },
+  { id: "snail", name: "カタツムリ", kanaName: "かたつむり",enName: "Snail",emoji: "🐌", maxMale: 1, maxFemale: 1 }
+ ];
+
+ let currentLevel = 1;
+ let activeAnimals = [];
+ let totalTarget = 0;
+
+ let arkState = {};
+ let currentVisitor = null;
+ let onboardCount = 0;
+ let isGameOver = false;
+ let isGameStarted = false;
+ let isAnimating = false;
+
+ let startTime = null;
+ let currentLang = 'ja';
+
+ function setLanguage(lang) {
+  currentLang = lang;
+  ['ja', 'kana', 'en'].forEach(l => {
+   const btn = document.getElementById(`lang-${l}`);
+   if (l === lang) btn.classList.add('active');
+   else btn.classList.remove('active');
+  });
+
+  updateTexts();
+  renderArk();
+  if (currentVisitor) {
+   updateVisitorCardName();
+  }
+ }
+
+ function getAnimalDisplayName(animal) {
+  if (currentLang === 'en') return animal.enName;
+  if (currentLang === 'kana') return animal.kanaName;
+  return animal.name;
+ }
+
+ function getGenderText(gender) {
+  if (gender === 'none') return "";
+  if (gender === 'male') {
+   if (currentLang === 'en') return "♂ Male";
+   if (currentLang === 'kana') return "おす";
+   return "♂ (オス)";
+  } else {
+   if (currentLang === 'en') return "♀ Female";
+   if (currentLang === 'kana') return "めす";
+   return "♀ (メス)";
+  }
+ }
+
+ function updateVisitorCardName() {
+  if (!currentVisitor) return;
+  const animalName = getAnimalDisplayName(currentVisitor);
+  const genderSymbol = getGenderText(currentVisitor.gender);
+  document.getElementById("v-name").textContent = genderSymbol ? `${animalName} ${genderSymbol}` : animalName;
+ }
+
+ function updateTexts() {
+  if (currentLang === 'en') {
+   document.getElementById("ui-title").textContent = "ARK GAME";
+   document.getElementById("lvl-1").textContent = "Level 1 (4 types)";
+   document.getElementById("lvl-2").textContent = "Level 2 (8 types)";
+   document.getElementById("lvl-3").textContent = "Level 3 (16 types)";
+   document.getElementById("lvl-4").textContent = "Noah Level (49 types)";
+   
+   document.getElementById("ui-instructions").innerHTML = 
+   `Animals arrive one by one!<br>` +
+   `Tap <strong>"Board"</strong> if there's room, or <strong>"Reject"</strong> if capacity is full!<br>` +
+   `<small id="clean-note">⚠️ Always <strong>Reject</strong> Nephilim! ✨ Clean animals: <strong>3 Males / 4 Females</strong>.</small>`;
+   
+   document.getElementById("btn-board").textContent = "🚢 Board";
+   document.getElementById("btn-reject").textContent = "👋 Reject";
+   document.getElementById("btn-start").textContent = "▶️ Start!";
+   document.getElementById("btn-reset").textContent = "🔄 Play Again";
+   
+   if (!isGameStarted && !isGameOver) {
+    document.getElementById("message").textContent = "Press 'Start!' to begin!";
+   }
+
+  } else if (currentLang === 'kana') {
+   document.getElementById("ui-title").textContent = "のあの はこぶね";
+   document.getElementById("lvl-1").textContent = "れべる1 (4しゅ)";
+   document.getElementById("lvl-2").textContent = "れべる2 (8しゅ)";
+   document.getElementById("lvl-3").textContent = "れべる3 (16しゅ)";
+   document.getElementById("lvl-4").textContent = "れべる のあ (49しゅ)";
+   
+   document.getElementById("ui-instructions").innerHTML = 
+   `どうぶつが 1ひきずつ やってくるよ！<br>` +
+   `はこぶねに まだのれるなら<strong>「のせる」</strong>、もう いっぱいなら<strong>「かえってもらう」</strong>を えらぼう！<br>` +
+   `<small id="clean-note">⚠️ <strong>ねふぃりむ</strong>が きたら かならず <strong>「かえってもらう」</strong>を えらんでね！</small>`;
+   
+   document.getElementById("btn-board").textContent = "🚢 のせる";
+   document.getElementById("btn-reject").textContent = "👋 かえってもらう";
+   document.getElementById("btn-start").textContent = "▶️ すたーと！";
+   document.getElementById("btn-reset").textContent = "🔄 もういちど あそぶ";
+   
+   if (!isGameStarted && !isGameOver) {
+    document.getElementById("message").textContent = "「すたーと！」を おしてね！";
+   }
+
+  } else {
+   document.getElementById("ui-title").textContent = "ノアの箱舟ゲーム";
+   document.getElementById("lvl-1").textContent = "レベル1 (4種)";
+   document.getElementById("lvl-2").textContent = "レベル2 (8種)";
+   document.getElementById("lvl-3").textContent = "レベル3 (16種)";
+   document.getElementById("lvl-4").textContent = "レベルノア (49種)";
+
+   document.getElementById("ui-instructions").innerHTML = 
+   `動物が1匹ずつやってくるよ！<br>` +
+   `箱舟にまだ乗れるなら<strong>「乗せる」</strong>、もう定員がいっぱいなら<strong>「帰ってもらう」</strong>を選ぼう！<br>` +
+   `<small id="clean-note">⚠️ <strong>ネフィリム</strong>が来たらどんなときも<strong>「帰ってもらう」</strong>を選ぼう！</small>`;
+
+   document.getElementById("btn-board").textContent = "🚢 乗せる";
+   document.getElementById("btn-reject").textContent = "👋 帰ってもらう";
+   document.getElementById("btn-start").textContent = "▶️ スタート！";
+   document.getElementById("btn-reset").textContent = "🔄 最初から遊ぶ";
+
+   if (!isGameStarted && !isGameOver) {
+    document.getElementById("message").textContent = "「スタート！」を押してゲームを開始しよう！";
+   }
+  }
+ }
+
+ function changeLevel(level) {
+  currentLevel = level;
+
+  document.querySelectorAll(".level-btn").forEach((btn, idx) => {
+   if (idx + 1 === level) {
+    btn.classList.add("active");
+   } else {
+    btn.classList.remove("active");
+   }
+  });
+
+  resetGame();
+ }
+
+ function resetGame() {
+  onboardCount = 0;
+  isGameOver = false;
+  isGameStarted = false;
+  isAnimating = false;
+
+  if (currentLevel === 1) {
+   activeAnimals = allAnimals.slice(0, 4);
+  } else if (currentLevel === 2) {
+   activeAnimals = allAnimals.slice(0, 8);
+  } else if (currentLevel === 3) {
+   activeAnimals = allAnimals.slice(0, 16);
+  } else {
+   activeAnimals = [...allAnimals];
+  }
+
+  // 配列の位置をランダムにシャッフル
+  for (let i = activeAnimals.length - 1; i > 0; i--) {
+   const j = Math.floor(Math.random() * (i + 1));
+   [activeAnimals[i], activeAnimals[j]] = [activeAnimals[j], activeAnimals[i]];
+  }
+
+  totalTarget = activeAnimals.reduce((sum, a) => a.isForbidden ? sum : sum + a.maxMale + a.maxFemale, 0);
+
+  document.body.className = "";
+  document.getElementById("rainbow").style.display = "none";
+  document.getElementById("ark-container").className = "ark-container";
+  document.getElementById("max-count").textContent = totalTarget;
+
+  arkState = {};
+  activeAnimals.forEach(a => {
+   arkState[a.id] = { male: 0, female: 0, maxMale: a.maxMale, maxFemale: a.maxFemale, isForbidden: a.isForbidden };
+  });
+
+  document.getElementById("count").textContent = "0";
+  document.getElementById("clear-time-display").innerHTML = ""; 
+
+  document.getElementById("btn-start").style.display = "inline-block";
+  enableButtons(false);
+
+  document.getElementById("v-emoji").textContent = "❓";
+  document.getElementById("v-name").textContent = "...";
+
+  updateTexts();
+  renderArk();
+ }
+
+ function startGame() {
+  isGameStarted = true;
+  startTime = Date.now();
+  document.getElementById("btn-start").style.display = "none";
+  enableButtons(true);
+
+  let startMsg = "";
+  const lvlName = currentLevel === 4 ? (currentLang === 'en' ? 'Noah' : (currentLang === 'kana' ? 'のあ' : 'ノア')) : currentLevel;
+
+  if (currentLang === 'en') startMsg = `Level ${lvlName} Start!`;
+  else if (currentLang === 'kana') startMsg = `れべる ${lvlName} すたーと！`;
+  else startMsg = `レベル${lvlName} スタート！`;
+
+  document.getElementById("message").textContent = startMsg;
+  document.getElementById("message").className = "message";
+
+  nextVisitor();
+ }
+
+ function renderArk() {
+  const grid = document.getElementById("ark-grid");
+  grid.innerHTML = "";
+
+  let arkTitleText = "🚢 箱舟の中（乗せた数: ";
+  let arkTitleSuffix = "匹）";
+  if (currentLang === 'en') {
+   arkTitleText = "🚢 Inside Ark (Boarded: ";
+   arkTitleSuffix = ")";
+  } else if (currentLang === 'kana') {
+   arkTitleText = "🚢 はこぶねの なか（のせたかず: ";
+   arkTitleSuffix = "ひき）";
+  }
+
+  document.getElementById("ui-ark-title").innerHTML = `${arkTitleText}<span id="count">${onboardCount}</span> / <span id="max-count">${totalTarget}</span>${arkTitleSuffix}`;
+
+  activeAnimals.forEach(a => {
+   if (a.isForbidden) return;
+
+   const state = arkState[a.id];
+   const card = document.createElement("div");
+   card.className = "ark-card";
+
+   const displayName = getAnimalDisplayName(a);
+
+   let maleText = currentLang === 'en' ? "M" : (currentLang === 'kana' ? "おす" : "♂");
+   let femaleText = currentLang === 'en' ? "F" : (currentLang === 'kana' ? "めす" : "♀");
+
+   let maleHtml = "";
+   let femaleHtml = "";
+
+   if (a.maxMale === 1) {
+    maleHtml = state.male > 0 ? `<span class="gender-male-on">${maleText}</span>` : `<span class="gender-off">${maleText}</span>`;
+   } else {
+    maleHtml = state.male > 0 ? `<span class="gender-male-on count-text">${maleText}${state.male}/${a.maxMale}</span>` : `<span class="gender-off count-text">${maleText}0/${a.maxMale}</span>`;
+   }
+
+   if (a.maxFemale === 1) {
+    femaleHtml = state.female > 0 ? `<span class="gender-female-on">${femaleText}</span>` : `<span class="gender-off">${femaleText}</span>`;
+   } else {
+    femaleHtml = state.female > 0 ? `<span class="gender-female-on count-text">${femaleText}${state.female}/${a.maxFemale}</span>` : `<span class="gender-off count-text">${femaleText}0/${a.maxFemale}</span>`;
+   }
+
+   card.innerHTML = `
+    <span class="emoji">${a.emoji}</span>
+    <div class="animal-name">${displayName}</div>
+    <div class="genders">${maleHtml} ${femaleHtml}</div>
+   `;
+   grid.appendChild(card);
+  });
+ }
+
+ function nextVisitor() {
+  if (isGameOver || !isGameStarted) return;
+
+  const candidates = [];
+
+  activeAnimals.forEach(animal => {
+   if (animal.isForbidden) {
+    candidates.push({ animal, gender: "none", weight: 3 });
+   } else {
+    ["male", "female"].forEach(gender => {
+     const currentAmount = arkState[animal.id][gender];
+     const maxAmount = gender === "male" ? animal.maxMale : animal.maxFemale;
+     
+     let weight = 0;
+     if (currentAmount < maxAmount) {
+      weight = (maxAmount - currentAmount) * 10;
+     } else {
+      weight = 1;
+     }
+
+     candidates.push({ animal, gender, weight });
+    });
+   }
+  });
+
+  const totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
+  let randomNum = Math.random() * totalWeight;
+  let selectedCandidate = candidates[0];
+
+  for (const candidate of candidates) {
+   if (randomNum < candidate.weight) {
+    selectedCandidate = candidate;
+    break;
+   }
+   randomNum -= candidate.weight;
+  }
+
+  const selectedAnimal = selectedCandidate.animal;
+  const selectedGender = selectedCandidate.gender;
+
+  currentVisitor = {
+   ...selectedAnimal,
+   gender: selectedGender
+  };
+
+  const card = document.getElementById("v-card");
+  card.className = "visitor-card"; 
+  void card.offsetWidth;
+
+  document.getElementById("v-emoji").textContent = currentVisitor.emoji;
+  updateVisitorCardName();
+  card.classList.add("walk-in");
+
+  playSound('appear');
+  isAnimating = false;
+ }
+
+ function handleChoice(playerWantsToBoard) {
+  if (isGameOver || !isGameStarted || isAnimating || !currentVisitor) return;
+
+  isAnimating = true;
+  const animalId = currentVisitor.id;
+  const gender = currentVisitor.gender;
+  const isForbidden = currentVisitor.isForbidden;
+
+  const currentAmount = isForbidden ? 0 : arkState[animalId][gender];
+  const maxAmount = isForbidden ? 0 : (gender === "male" ? arkState[animalId].maxMale : arkState[animalId].maxFemale);
+  const isFull = isForbidden || (currentAmount >= maxAmount);
+
+  const msgEl = document.getElementById("message");
+  const card = document.getElementById("v-card");
+  const animalName = getAnimalDisplayName(currentVisitor);
+  const genderText = getGenderText(gender);
+
+  if (playerWantsToBoard) {
+   if (isFull) {
+    card.classList.add("board-in");
+    playSound('lose');
+    
+    if (isForbidden) {
+     if (currentLang === 'en') msgEl.textContent = `Failed! You cannot board ${animalName}!`;
+     else if (currentLang === 'kana') msgEl.textContent = `しっぱい！ ${animalName}は のせられません！`;
+     else msgEl.textContent = `失敗！ ${animalName}は乗せてはいけません！`;
+    } else {
+     if (currentLang === 'en') msgEl.textContent = `Failed! ${animalName} (${genderText}) is already full!`;
+     else if (currentLang === 'kana') msgEl.textContent = `しっぱい！ ${animalName}の ${genderText}は もう いっぱいです！`;
+     else msgEl.textContent = `失敗！ ${animalName}の${genderText}はもう定員がいっぱいです！`;
+    }
+
+    msgEl.className = "message error";
+    endGame(false);
+   } else {
+    card.classList.add("board-in");
+    playSound('board');
+    setTimeout(() => {
+     arkState[animalId][gender]++;
+     onboardCount++;
+     document.getElementById("count").textContent = onboardCount;
+
+     const nowCount = arkState[animalId][gender];
+     let countInfo = "";
+     if (maxAmount > 1) {
+      if (currentLang === 'en') countInfo = ` (${nowCount}/${maxAmount})`;
+      else if (currentLang === 'kana') countInfo = ` (${nowCount}/${maxAmount}ひきめ)`;
+      else countInfo = ` (${nowCount}/${maxAmount}匹目)`;
+     }
+
+     if (currentLang === 'en') msgEl.textContent = `⭕ Boarded ${animalName} (${genderText})${countInfo}!`;
+     else if (currentLang === 'kana') msgEl.textContent = `⭕ ${animalName} ${genderText} ${countInfo} を のせました！`;
+     else msgEl.textContent = `⭕ ${animalName} ${genderText} ${countInfo} を乗せました！`;
+
+     msgEl.className = "message success";
+
+     renderArk();
+
+     if (onboardCount === totalTarget) {
+      if (currentLang === 'en') msgEl.textContent = "🎉 Congratulations! All animals are aboard! 🎉";
+      else if (currentLang === 'kana') msgEl.textContent = "🎉 おめでとう！ ぜんぶの どうぶつを のせられたよ！ 🎉";
+      else msgEl.textContent = "🎉 おめでとう！すべての動物を乗せられました！ 🎉";
+
+      msgEl.className = "message success";
+      endGame(true);
+     } else {
+      nextVisitor();
+     }
+    }, 400);
+   }
+  } else {
+   if (isFull) {
+    card.classList.add("walk-out");
+    playSound('reject');
+    setTimeout(() => {
+     if (isForbidden) {
+      if (currentLang === 'en') msgEl.textContent = `⭕ Successfully turned away ${animalName}!`;
+      else if (currentLang === 'kana') msgEl.textContent = `⭕ ${animalName}に かえってもらいました！`;
+      else msgEl.textContent = `⭕ ${animalName}に無事帰ってもらいました！`;
+     } else {
+      if (currentLang === 'en') msgEl.textContent = `⭕ Turned away ${animalName} (${genderText}) as capacity was full.`;
+      else if (currentLang === 'kana') msgEl.textContent = `⭕ ${animalName} ${genderText} は いっぱいだったので かえってもらいました。`;
+      else msgEl.textContent = `⭕ ${animalName} ${genderText} は定員がいっぱいだったので帰ってもらいました。`;
+     }
+
+     msgEl.className = "message success";
+     nextVisitor();
+    }, 400);
+   } else {
+    card.classList.add("walk-out");
+    playSound('lose');
+    
+    if (currentLang === 'en') msgEl.textContent = `Failed! ${animalName} (${genderText}) still had room!`;
+    else if (currentLang === 'kana') msgEl.textContent = `しっぱい！ ${animalName}の ${genderText}は まだ のせられました！`;
+    else msgEl.textContent = `失敗！ ${animalName}の${genderText}はまだ乗せられました！`;
+
+    msgEl.className = "message error";
+    endGame(false);
+   }
+  }
+ }
+
+ function endGame(isWin) {
+  isGameOver = true;
+  enableButtons(false);
+
+  if (isWin) {
+   playSound('win');
+   document.body.className = "success-bg";
+   document.getElementById("rainbow").style.display = "block";
+
+   const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+   const minutes = Math.floor(elapsedTime / 60);
+   const seconds = (elapsedTime % 60).toFixed(1);
+   
+   let timeString = "";
+   if (currentLang === 'en') {
+    timeString = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
+   } else if (currentLang === 'kana') {
+    timeString = minutes > 0 ? `${minutes}ふん${seconds}びょう` : `${seconds}びょう`;
+   } else {
+    timeString = minutes > 0 ? `${minutes}分${seconds}秒` : `${seconds}秒`;
+   }
+
+   let clearLabel = "⏱️ クリアタイム";
+   if (currentLang === 'en') clearLabel = "⏱️ Clear Time";
+   else if (currentLang === 'kana') clearLabel = "⏱️ くりあたいむ";
+
+   const timeDisplay = document.getElementById("clear-time-display");
+   timeDisplay.innerHTML = `<div class="clear-time">${clearLabel}: ${timeString}</div>`;
+  } else {
+   document.body.className = "error-bg";
+   setTimeout(() => {
+    document.getElementById("ark-container").classList.add("sinking");
+   }, 300);
+  }
+ }
+
+ function enableButtons(enabled) {
+  document.getElementById("btn-board").disabled = !enabled;
+  document.getElementById("btn-reject").disabled = !enabled;
+ }
+
+ resetGame();
+ </script>
+
+</body>
+
+</html>
