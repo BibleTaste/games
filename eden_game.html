@@ -800,14 +800,15 @@
       const minDist = 50;
       const clampedDist = Math.max(minDist, Math.min(maxDist, dist));
       const speedMultiplier = 1 + (1 - (clampedDist - minDist) / (maxDist - minDist)) * 2.5;
-
+    
       sword.angle += 0.2 * speedMultiplier;
       sword.t += 0.015 * speedMultiplier;
-
+    
       const rawSine = (Math.sin(sword.t) + 1) / 2;
       const constrainedT = 0.15 + rawSine * 0.70;
-
-      sword.x = angels[0].x * (1 - constrainedT) + angels[1].x * constrainedT;
+    
+      // X座標をエデンの園（720〜800の間、例えば 760）に固定し、Y座標のみ天使間を移動
+      sword.x = 760; 
       sword.y = angels[0].y * (1 - constrainedT) + angels[1].y * constrainedT;
     }
 
