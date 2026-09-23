@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>クイズチャレンジ</title>
+   <style>
+      :root {
+         --bg-color: #eef2f5;
+         --card-bg: #ffffff;
+         --primary-color: #ff6b6b;
+         --secondary-color: #4ecdc4;
+         --accent-color: #ffe66d;
+         --text-color: #2c3e50;
+         --anim-speed: 0.5s;
+         --cell-size: 55px;
+      }
+
+      body {
+         font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+         background-color: var(--bg-color);
+         color: var(--text-color);
+         margin: 0;
+         padding: 16px;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         min-height: 100vh;
+         box-sizing: border-box;
+      }
+
+      header {
+         text-align: center;
+         margin-bottom: 20px;
+         width: 100%;
+      }
+
+      header h1 {
+         font-size: clamp(1.5rem, 5vw, 2.4rem);
+         color: var(--primary-color);
+         margin: 0;
+         text-shadow: 2px 2px 0px #fff;
+         word-break: break-word;
+      }
+
+      .quiz-card {
+         background: var(--card-bg);
+         border-radius: 24px;
+         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+         width: 100%;
+         max-width: 800px;
+         padding: 28px;
+         box-sizing: border-box;
+         position: relative;
+         overflow: hidden;
+      }
+
+      .nav-bar {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 20px;
+         gap: 12px;
+         flex-wrap: wrap;
+      }
+
+      .nav-btn {
+         background: var(--secondary-color);
+         color: white;
+         border: none;
+         padding: 10px 18px;
+         border-radius: 14px;
+         font-weight: bold;
+         font-size: 1rem;
+         cursor: pointer;
+         transition: transform 0.1s;
+         flex-shrink: 0;
+         touch-action: manipulation;
+      }
+
+      .nav-btn:disabled {
+         opacity: 0.4;
+         cursor: not-allowed;
+      }
+
+      select.quiz-select {
+         padding: 10px;
+         border-radius: 12px;
+         border: 2px solid var(--secondary-color);
+         font-size: 0.95rem;
+         font-weight: bold;
+         outline: none;
+         flex: 1;
+         min-width: 150px;
+         max-width: 100%;
+         text-overflow: ellipsis;
+      }
+
+      .question-badge {
+         display: inline-block;
+         background: var(--accent-color);
+         color: #854d0e;
+         font-weight: bold;
+         padding: 4px 12px;
+         border-radius: 20px;
+         font-size: 0.9rem;
+         margin-bottom: 8px;
+      }
+
+      .question-title {
+         font-size: clamp(1.15rem, 4.2vw, 1.55rem);
+         margin-top: 0;
+         margin-bottom: 18px;
+         word-break: break-word;
+         line-height: 1.6;
+      }
+
+      .question-image {
+         text-align: center;
+         margin-bottom: 16px;
+      }
+
+      .question-image img {
+         max-width: 100%;
+         max-height: 250px;
+         border-radius: 12px;
+         object-fit: cover;
+      }
+
+      .bible-read-box {
+         background: #fef3c7;
+         border: 2px dashed #f59e0b;
+         border-radius: 16px;
+         padding: 16px;
+         margin-bottom: 18px;
+         font-size: 1.05rem;
+         line-height: 1.6;
+      }
+
+      .options-grid {
+         display: grid;
+         grid-template-columns: repeat(2, 1fr);
+         gap: 12px;
+         width: 100%;
+      }
+
+      .options-grid.two-cols {
+         grid-template-columns: repeat(2, 1fr);
+      }
+
+      .btn-option {
+         background: #f8fafc;
+         border: 2px solid #cbd5e1;
+         border-radius: 16px;
+         padding: 12px;
+         font-size: clamp(1rem, 3.8vw, 1.2rem);
+         font-weight: bold;
+         cursor: pointer;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         word-break: break-word;
+         min-height: 60px;
+         box-sizing: border-box;
+         color: var(--text-color);
+         transition: all 0.2s ease;
+      }
+
+      .btn-option.selected {
+         background-color: #e0f2fe;
+         border-color: #0284c7;
+         box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3);
+      }
+
+      .btn-option img {
+         max-width: 100%;
+         max-height: 120px;
+         border-radius: 8px;
+         margin-bottom: 8px;
+         object-fit: cover;
+      }
+
+      .submit-btn {
+         display: block;
+         width: 100%;
+         background: var(--primary-color);
+         color: white;
+         border: none;
+         padding: 14px;
+         border-radius: 16px;
+         font-size: 1.2rem;
+         font-weight: bold;
+         cursor: pointer;
+         margin-top: 20px;
+         box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+      }
+
+      .classify-container {
+         display: flex;
+         flex-direction: column;
+         gap: 16px;
+      }
+
+      .drag-items-pool {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+         padding: 12px;
+         background: #f1f5f9;
+         border-radius: 12px;
+         min-height: 60px;
+      }
+
+      .drop-categories {
+         display: grid;
+         grid-template-columns: repeat(2, 1fr);
+         gap: 12px;
+      }
+
+      .drop-zone {
+         background: #fff;
+         border: 2px dashed #94a3b8;
+         border-radius: 12px;
+         padding: 10px;
+         min-height: 120px;
+      }
+
+      .drop-zone h4 {
+         margin: 0 0 8px 0;
+         text-align: center;
+         color: #475569;
+      }
+
+      .drag-item {
+         background: #ffffff;
+         border: 2px solid #cbd5e1;
+         border-radius: 10px;
+         padding: 8px 12px;
+         font-weight: bold;
+         cursor: grab;
+         user-select: none;
+         display: inline-flex;
+         align-items: center;
+         gap: 8px;
+         margin: 4px;
+      }
+
+      /* === 並び替えクイズのUI改善スタイル === */
+      .sort-list {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
+         user-select: none;
+         touch-action: pan-y;
+      }
+
+      .sort-item {
+         background: #ffffff;
+         border: 2.5px solid #cbd5e1;
+         border-radius: 16px;
+         padding: 10px 14px;
+         display: flex;
+         align-items: center;
+         gap: 12px;
+         font-weight: bold;
+         box-shadow: 0 3px 6px rgba(0,0,0,0.04);
+         transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+         touch-action: none;
+      }
+
+      .sort-item.dragging {
+         opacity: 0.85;
+         transform: scale(1.02);
+         border-color: var(--secondary-color);
+         box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+         z-index: 10;
+      }
+
+      .sort-handle {
+         font-size: 1.4rem;
+         color: #94a3b8;
+         cursor: grab;
+         padding: 0 4px;
+      }
+
+      .sort-num {
+         background: var(--secondary-color);
+         color: white;
+         width: 28px;
+         height: 28px;
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 0.95rem;
+         font-weight: bold;
+         flex-shrink: 0;
+      }
+
+      .sort-text {
+         flex: 1;
+         font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+         line-height: 1.4;
+         word-break: break-word;
+      }
+
+      .sort-controls {
+         display: flex;
+         flex-direction: column;
+         gap: 4px;
+         flex-shrink: 0;
+      }
+
+      .btn-sort-move {
+         background: #f1f5f9;
+         border: 1.5px solid #cbd5e1;
+         border-radius: 8px;
+         padding: 6px 10px;
+         font-size: 0.75rem;
+         font-weight: bold;
+         color: #475569;
+         cursor: pointer;
+         touch-action: manipulation;
+      }
+
+      .btn-sort-move:active {
+         background: var(--secondary-color);
+         color: white;
+      }
+
+      .puzzle-board-container {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         user-select: none;
+      }
+
+      .puzzle-board-4x6 {
+         position: relative;
+         display: grid;
+         grid-template-columns: repeat(6, var(--cell-size));
+         grid-template-rows: repeat(4, var(--cell-size));
+         width: calc(var(--cell-size) * 6);
+         height: calc(var(--cell-size) * 4);
+         margin: 0 auto 16px auto;
+         border: 3px solid #334155;
+         border-radius: 12px;
+         background: #cbd5e1;
+         box-sizing: content-box;
+      }
+
+      .puzzle-cell {
+         width: var(--cell-size);
+         height: var(--cell-size);
+         background: #f8fafc;
+         border: 1px dashed #94a3b8;
+         box-sizing: border-box;
+      }
+
+      .puzzle-mino-pool {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 12px;
+         justify-content: center;
+         align-items: flex-start;
+         padding: 16px;
+         background: #f1f5f9;
+         border-radius: 12px;
+         min-height: 140px;
+         width: 100%;
+         box-sizing: border-box;
+      }
+
+      .mino-piece {
+         position: relative;
+         cursor: grab;
+         touch-action: none;
+         user-select: none;
+      }
+
+      .mino-piece.dragging {
+         cursor: grabbing;
+         z-index: 1000 !important;
+         opacity: 0.9;
+      }
+
+      .mino-block {
+         position: absolute;
+         width: var(--cell-size);
+         height: var(--cell-size);
+         box-sizing: border-box;
+         border: 1px solid rgba(255, 255, 255, 0.8);
+         background-repeat: no-repeat;
+         pointer-events: none;
+      }
+
+      .slide-card {
+         background: #f0f9ff;
+         border: 2px solid #0284c7;
+         border-radius: 18px;
+         padding: 20px;
+         line-height: 1.8;
+      }
+
+      .slide-card h2 {
+         color: #0369a1;
+         margin-top: 0;
+      }
+
+      .explanation-card {
+         background: #f0fdf4;
+         border: 2px solid #86efac;
+         border-radius: 18px;
+         padding: 18px;
+         margin-top: 22px;
+      }
+
+      .overlay {
+         position: absolute;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background: rgba(255, 255, 255, 0.95);
+         display: flex;
+         flex-direction: column;
+         justify-content: center;
+         align-items: center;
+         z-index: 2000;
+         padding: 12px;
+         text-align: center;
+      }
+
+      .drumroll-text {
+         font-size: clamp(1.4rem, 5vw, 2.2rem);
+         font-weight: bold;
+         color: var(--primary-color);
+         animation: pulse 0.3s infinite alternate;
+      }
+
+      .result-mark {
+         font-size: clamp(2rem, 8vw, 3.8rem);
+         font-weight: bold;
+      }
+
+      .mark-correct {
+         color: #22c55e;
+         animation: popIn var(--anim-speed) ease-out;
+      }
+
+      .mark-wrong {
+         color: #ef4444;
+         animation: shake var(--anim-speed) ease-in-out;
+      }
+
+      @keyframes pulse {
+         from {
+            transform: scale(1);
+         }
+
+         to {
+            transform: scale(1.08);
+         }
+      }
+
+      @keyframes popIn {
+         0% {
+            transform: scale(0);
+         }
+
+         100% {
+            transform: scale(1);
+         }
+      }
+
+      @keyframes shake {
+
+         0%,
+         100% {
+            transform: translateX(0);
+         }
+
+         40%,
+         80% {
+            transform: translateX(10px);
+         }
+      }
+
+      @media (max-width: 480px) {
+
+         .options-grid,
+         .drop-categories {
+            grid-template-columns: 1fr;
+         }
+      }
+
+      .hidden {
+         display: none !important;
+      }
+   </style>
+</head>
+
+<body>
+
+   <header>
+      <h1 id="appTitle">クイズチャレンジ</h1>
+   </header>
+
+   <div class="quiz-card">
+      <div class="nav-bar">
+         <button id="btnPrev" class="nav-btn" onclick="prevQuiz()">◀ まえへ</button>
+         <button id="btnNext" class="nav-btn" onclick="nextQuiz()">つぎへ ▶</button>
+         <select id="quizSelect" class="quiz-select" onchange="jumpToQuiz(this.value)"></select>
+      </div>
+
+      <div id="overlay" class="overlay hidden">
+         <div id="overlayContent"></div>
+      </div>
+
+      <div id="quizContent"></div>
+
+      <div id="explanationBox" class="explanation-card hidden">
+         <h3 id="expStatus"></h3>
+         <p id="expText" style="line-height: 1.7; white-space: pre-wrap;"></p>
+      </div>
+   </div>
+
+   <script>
+      const CONFIG = {
+         title: "イエスは ちじょうで どんなことをした？",
+         drumrollDuration: 8000,
+         resultDisplayTime: 1200,
+         sounds: {
+            drumroll: "https://otologic.jp/sounds/se/pre2/Quiz-Results01-3.mp3",
+            correct: "https://otologic.jp/sounds/se/pre2/Quiz-Ding_Dong03-1(Short).mp3",
+            wrong: "https://otologic.jp/sounds/se/pre2/Quiz-Buzzer02-5(Multi).mp3"
+         }
+      };
+
+      const quizData = [
+         {
+            "isHome": true,
+            "title": "イエスは ちじょうで どんなことをした？",
+            "description": "「いつまでも しあわせに くらせます」レッスン１６の クイズだよ",
+            "buttonText": "クイズを はじめる！",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/J/art/1102021216_J_cnt_01_lg.jpg"
+         },
+         {
+            "type": "slide",
+            "badge": "📚 がくしゅうスライド",
+            "title": "イエス・キリストの ちじょうでの あゆみ",
+            "content": "イエスは ちじょうに いた とき、かみの おうこくの よい しらせを つたえ、たくさんの びょうきの ひとを なおす きせきを おこないました。\n\nまた、でしたちや こどもたちに しんせつにし、あいの てほんを しめして くれました。\n\nみゆちゃんは イエスが どんな ひとだったか しっている？",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/502018118/univ/art/502018118_univ_lsr_lg.jpg"
+         },
+         {
+            "type": "single",
+            "badge": "だい1もん",
+            "question": "イエスは ちじょうで なにを していた？",
+            "options": [
+               { "text": "おいしゃさん", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNqU4HupZ6t7dYlYRKvSPOspXwWrOL1hdKGgow3K_pvlyxqTbZAl73HYC7E8PWfSbnQiwa9MI3LJxZ5wrQnphziufST3OU51VrTHEQnEri9yXwFusorJr9ovogoN9oJUaI0gGnc31AxS3P/s400/medical_nyuin_doctor_man.png" },
+               { "text": "かみの おうこくの よい しらせを つたえた", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgjGbrorrfIKTJ-GzLP_hd0YElUPSaUxjuoSYW70aEjVsC0MUePluT-RdMt7ED5XKYjc2-u1WCAza_0FPvuNmycAjaWmV1dDwztVrUyDb8hZr5xLJ6Ux82XDbkAV-dXleavQa7azueVNUM2/s800/presentation_setsumei_man.png" },
+               { "text": "くるまの うんてん", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiHI59-eQIPditx8jvP8zMMyFJoaoPEAHVpKYcmfQTDZS2Nr-wL3ac4JnBkJ1rtj02rexEzolZnWsD8Ap1ybLS4OYdYPB3WNsjjWPHIQiiNmOwiF2diE8eG_pkhYRM5QCG9y43CxQ3028/s400/taxi_driver_untensyu3.png" },
+               { "text": "さかなを とる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqgYlZg9hDmCYasDNFhgIM1bqLhnOElLJgFRMUkJGyrmwR9GS6s-Y8yp7ZKslJK65WLVb8C6vQsUyan42vqxJY6WwZvTf6RCZutPNrED2HJ1FsFFmopr7qowjpc9IiN1M2iUjOiJfKMh1C/s800/job_gyogyou_ryoushi.png" }
+            ],
+            "answer": "かみの おうこくの よい しらせを つたえた",
+            "explanation": "イエスは「かみの おうこくに ついての よい しらせ」を つたえる ことを いちばん たいせつに していました。"
+         },
+         {
+            "type": "single",
+            "badge": "だい2もん",
+            "question": "イエスは なにを コントロールする きせきを おこなった？",
+            "options": [
+               { "text": "しぜん（かぜや うみ）", "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" },
+               { "text": "ロケット", "image": "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=400&q=80" },
+               { "text": "じどうしゃ", "image": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400&q=80" },
+               { "text": "スマホ", "image": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=400&q=80" }
+            ],
+            "answer": "しぜん（かぜや うみ）",
+            "explanation": "せいかい！ イエスは つよい かぜや あらい うみも しずめる ことが できました。（マタイ 8:23-27）"
+         },
+         {
+            "type": "multiple",
+            "badge": "だい3もん（ふくすう せんたく）",
+            "question": "イエスの きせきから なにが わからかな？（あてはまるものを えらぼう）",
+            "options": [
+               { "text": "イエスは エホバから つかわされた", "image": "https://cms-imgp.jw-cdn.org/img/p/2026523/univ/art/2026523_univ_cnt_1_xl.jpg" },
+               { "text": "あらしと おはなしできる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWJu0T6R-qnhzx0AF1tf8egPbUuh1m2sxWDI6UpU22ZiydNSQo2_Q3hK3gSW2CoHIfQ0J1GrG0LVBR0Jgt8PUmMZ0Yz76JH-DQFCmwf7c8IAMA5oVnZ2Naex10IQb5Iw15QqeF2dLTt7Gg/s500/arashi.png" },
+               { "text": "パンは おいしい", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg25JicWql0BeKQwPegUTbApgHtRR7zFFum20Zed1jxKdokrJoMESQ96j2CT5OzhiHi2U5LHSegsDz4CrMT9Y9clPpi7H2I5k7FNuShdg0iCNXWz-LqhccVuFzPTY76gpcU3LHUD5syP5NC/s400/pan_bread_set.png" },
+               { "text": "エホバが もんだいを かいけつしてくれる", "image": "https://cms-imgp.jw-cdn.org/img/p/2016403/univ/art/2016403_univ_lsr_lg.jpg" }
+            ],
+            "answer": [
+               "イエスは エホバから つかわされた",
+               "エホバが もんだいを かいけつしてくれる"
+            ],
+            "explanation": "イエスが おこなった きせきを しらべると、エホバが にんげんに してあげたい ことが わかるね！"
+         },
+         {
+            "type": "binary",
+            "badge": "だい4もん",
+            "question": "イエスは「かみの おうこくの よい しらせ」を つたえるのを じゃまされたとき、やめちゃった？ ⭕か ❌か？",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/2026684/univ/art/2026684_univ_cnt_2_lg.jpg",
+            "options": ["⭕ ほんとう（○）", "❌ ちがう（✕）"],
+            "answer": "❌ ちがう（✕）",
+            "explanation": "せいかいは ❌！ いじわるを されても エホバから いわれた とおりにし、さいごまで やめませんでした。"
+         },
+         {
+            "type": "bible-first",
+            "badge": "だい5もん",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_03_lg.jpg",
+            "bibleText": "「イエスは まちから まちへ，むらから むらへと たびをし，かみの おうこくの よい しらせを ひろめた」（ルカ 1:8）",
+            "question": "イエスは「かみの おうこくの よい しらせ」を つたえるために なにを した？",
+            "options": ["たくさん たべた", "たくさん ほんを かいた", "たくさん あるいた", "たくさん ねた"],
+            "answer": "たくさん あるいた",
+            "explanation": "せいかい！ イエスは たくさんの ひとに あうために、じぶんから ひとびとの ところへ あるいて いきました。"
+         },
+         {
+            "type": "classify",
+            "badge": "だい6もん",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_04_lg.jpg",
+            "question": "マタイ 6：14，34と7：12をよんで、イエスが「おしえた こと」と「おしえていない こと」に わけてみよう！",
+            "categories": ["おしえた こと", "おしえていない こと"],
+            "items": [
+               { "id": "c1", "text": "ひとを ゆるすなら、じぶんも ゆるしてもらえる", "category": "おしえた こと" },
+               { "id": "c2", "text": "あしたの ことを しんぱいしない", "category": "おしえた こと" },
+               { "id": "c3", "text": "ねたい ときに ねればいい にんげんだもの", "category": "おしえていない こと" },
+               { "id": "c4", "text": "じぶんが してほしい ことは、ひとにも してあげよう", "category": "おしえた こと" }
+            ],
+            "explanation": "すごい！ イエスが おしえていた ことは、エホバが みんなに しってほしいと おもっている ことだよ！"
+         },
+         {
+            "type": "slide",
+            "badge": "📚 がくしゅうスライド",
+            "title": "どうがを みて クイズに こたえよう",
+            "content": "イエスは エホバから ちからを もらって，たくさんの きせきを おこないました。\n\n▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_161_VIDEO' target='_blank' style='color:#0284c7; font-weight:bold;'>【どうが】びょうきの おんなのひとが いやされる</a> を みてみよう！",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_06_xl.jpg"
+         },
+         {
+            "type": "single",
+            "badge": "だい7もん",
+            "question": "おんなのひとは どんな びょうきだった？",
+            "options": [
+               { "text": "はなみずが とまらない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSrSEBBYe37bM-F8BnvZVdnGkoFehVIFY4wiVwteK14Egps1aQR5poIbXfPS2IRloQVNii7RMN3QZ0NpJleFkLYq0AuXBEX8aMP-UR67a-U7ySC2yTJRvlFlrn_KTlL0jNyol6fyP4DWm5/s400/hanadumari_woman.png" },
+               { "text": "ねむれない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpklE9mfu57YZ7PyYcppg9XSpqOxyJYxPjLbf5Cj-QdoZ52G4dDeCioArypNUWp3vueXc4EFE3BAvD7DvvfJdsrnn60vQ2-jDWWNv_sKqXvzL_Gas5Na8vfLRuhK5rfV7hLWAAt8pHdjpM/s400/sleep_nemurenai_woman.png" },
+               { "text": "めが みえない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiY4zV21iho2RLuSwo-_XostdEA77gKzbsrBh_ps__OLZcuD4U99YPd2xHDqyve0HLj9KQ1kyGa_BYGKtSevNjaRCYADzmXCPub_hOu1QQsJLikq-wmjH2ojRIRIcZ-XH5hs-fif7JUZab6/s400/eye_hakunaisyou_ryokunaisyou.png" },
+               { "text": "ちが とまらない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGvw_TkOV2uIGUSNy8Pj4qAQevyIcd61vjnSJei_s2Vc6Cr0kBGmaAaM85rhu18ZyhG647O9NlpDBlfooGk1wpc0DTlWfjEgl0C1u1riQlfNJAYzUdX29WS0XrgSM7kbs_Pw-IFOIWskZp/s400/medical_ketsueki.png" }
+            ],
+            "answer": "ちが とまらない びょうき",
+            "explanation": "せいかい！ おんなのひとは ながねん「ちが とまらない びょうき」で くるしんでいましたが、イエスに たすけてもらいました。"
+         },
+         {
+            "type": "sort",
+            "badge": "だい8もん",
+            "question": "おんなのひとは どんなことをした？ じゅんばんに ならびかえよう！",
+            "items": [
+               { "id": "s1", "text": "イエスを さがした" },
+               { "id": "s2", "text": "イエスに ちかづいた" },
+               { "id": "s3", "text": "イエスに さわった" },
+               { "id": "s4", "text": "イエスに あやまった" }
+            ],
+            "correctOrder": ["s1", "s2", "s3", "s4"],
+            "explanation": "せいかい！ おんなのひとは イエスを さがし、ちかづき、ふくに さわり、さいごに あやまりました。イエスは とても やさしく してくれたね。"
+         },
+         {
+            "type": "slide",
+            "badge": "📚 ふくしゅうスライド",
+            "title": "クイズを ふりかえって かんがえよう",
+            "content": "・みゆちゃんは イエスの どんなところが すきに なりましたか？\n\nイエスとエホバはどんなところが似ていますか？",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/502012496/univ/art/502012496_univ_lsr_lg.jpg"
+         },
+         {
+            "type": "puzzle",
+            "badge": "🧩 さいごの パズル",
+            "question": "イエスが みんなに「かみの おうこくの よい しらせ」を はなしている ばめんの パズルを かんせいさせよう！",
+            "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/2014723/univ/art/2014723_univ_lsr_xl.jpg",
+            "explanation": "この ちょうしで せいしょの レッスンを つづけていこうね！"
+         }
+      ];
+
+      let currentIdx = 0;
+      let audioObjects = {};
+
+      const BOARD_ROWS = 4;
+      const BOARD_COLS = 6;
+      let boardState = Array.from({ length: BOARD_ROWS }, () => Array(BOARD_COLS).fill(null));
+
+      window.onload = () => {
+         document.getElementById("appTitle").innerText = CONFIG.title;
+         audioObjects.drumroll = new Audio(CONFIG.sounds.drumroll);
+         audioObjects.correct = new Audio(CONFIG.sounds.correct);
+         audioObjects.wrong = new Audio(CONFIG.sounds.wrong);
+
+         rebuildSelectOptions();
+         renderQuiz();
+      };
+
+      function rebuildSelectOptions() {
+         const select = document.getElementById("quizSelect");
+         select.innerHTML = "";
+         let qNum = 1;
+
+         quizData.forEach((data, idx) => {
+            const opt = document.createElement("option");
+            opt.value = idx;
+            if (data.isHome) opt.innerText = "🏠 トップ";
+            else if (data.type === "slide") opt.innerText = `📚 ${data.title}`;
+            else {
+               opt.innerText = `Q${qNum}. ${data.question.substring(0, 10)}...`;
+               qNum++;
+            }
+            select.appendChild(opt);
+         });
+      }
+
+      function updateNav() {
+         document.getElementById("btnPrev").disabled = (currentIdx === 0);
+         document.getElementById("btnNext").disabled = (currentIdx === quizData.length - 1);
+         document.getElementById("quizSelect").value = currentIdx;
+      }
+
+      function prevQuiz() { if (currentIdx > 0) { currentIdx--; renderQuiz(); } }
+      function nextQuiz() { if (currentIdx < quizData.length - 1) { currentIdx++; renderQuiz(); } }
+      function jumpToQuiz(idx) { currentIdx = parseInt(idx); renderQuiz(); }
+
+      function renderQuiz() {
+         updateNav();
+         document.getElementById("explanationBox").classList.add("hidden");
+         const container = document.getElementById("quizContent");
+         container.innerHTML = "";
+
+         const item = quizData[currentIdx];
+
+         if (item.isHome) {
+            container.innerHTML = `
+               <div style="text-align:center;">
+                  <h2>${item.title}</h2>
+                  ${item.image ? `<div style="text-align:center;margin-bottom:15px;"><img src="${item.image}" style="max-width:100%;border-radius:12px;"></div>` : ''}
+                  <p style="white-space:pre-wrap; line-height:1.7;">${item.description}</p>
+                  <button class="submit-btn" onclick="nextQuiz()">${item.buttonText}</button>
+               </div>`;
+            return;
+         }
+
+         if (item.badge) {
+            const badge = document.createElement("span");
+            badge.className = "question-badge";
+            badge.innerText = item.badge;
+            container.appendChild(badge);
+         }
+
+         if (item.type === "slide") {
+            container.innerHTML += `
+               <div class="slide-card">
+                  <h2>${item.title}</h2>
+                  ${item.image ? `<div style="text-align:center;margin-bottom:15px;"><img src="${item.image}" style="max-width:100%;border-radius:12px;"></div>` : ''}
+                  <p style="white-space:pre-wrap;">${item.content}</p>
+                  <button class="submit-btn" onclick="nextQuiz()">つぎへ▶</button>
+               </div>`;
+            return;
+         }
+
+         if (item.image) {
+            const imgBox = document.createElement("div");
+            imgBox.className = "question-image";
+            imgBox.innerHTML = `<img src="${item.image}">`;
+            container.appendChild(imgBox);
+         }
+
+         if (item.type === "bible-first" && item.bibleText) {
+            const bBox = document.createElement("div");
+            bBox.className = "bible-read-box";
+            bBox.innerHTML = `<strong>📖 まず 聖句（せいく）を 読もう！</strong><br>${item.bibleText}`;
+            container.appendChild(bBox);
+         }
+
+         const title = document.createElement("h2");
+         title.className = "question-title";
+         title.innerText = item.question;
+         container.appendChild(title);
+
+         if (["single", "binary", "fill-in", "bible-first"].includes(item.type)) {
+            const grid = document.createElement("div");
+            grid.className = "options-grid" + (item.type === "binary" ? " two-cols" : "");
+
+            item.options.forEach(opt => {
+               const text = typeof opt === "object" ? opt.text : opt;
+               const img = typeof opt === "object" && opt.image ? `<img src="${opt.image}">` : '';
+
+               const btn = document.createElement("button");
+               btn.className = "btn-option";
+               btn.innerHTML = `${img}<span>${text}</span>`;
+               btn.onclick = () => checkAnswer(text === item.answer);
+               grid.appendChild(btn);
+            });
+            container.appendChild(grid);
+         }
+         else if (item.type === "multiple") {
+            const grid = document.createElement("div");
+            grid.className = "options-grid";
+
+            const selectedValues = new Set();
+
+            item.options.forEach(opt => {
+               const text = typeof opt === "object" ? opt.text : opt;
+               const img = typeof opt === "object" && opt.image ? `<img src="${opt.image}">` : '';
+
+               const btn = document.createElement("button");
+               btn.className = "btn-option";
+               btn.innerHTML = `${img}<span>${text}</span>`;
+
+               btn.onclick = () => {
+                  if (selectedValues.has(text)) {
+                     selectedValues.delete(text);
+                     btn.classList.remove("selected");
+                  } else {
+                     selectedValues.add(text);
+                     btn.classList.add("selected");
+                  }
+               };
+               grid.appendChild(btn);
+            });
+            container.appendChild(grid);
+
+            const subBtn = document.createElement("button");
+            subBtn.className = "submit-btn";
+            subBtn.innerText = "答えあわせ！";
+            subBtn.onclick = () => {
+               const correctAnswers = Array.isArray(item.answer) ? item.answer : [item.answer];
+               const userSelected = Array.from(selectedValues);
+
+               const isCorrect = correctAnswers.length === userSelected.length &&
+                  correctAnswers.every(val => userSelected.includes(val));
+
+               checkAnswer(isCorrect);
+            };
+            container.appendChild(subBtn);
+         }
+         else if (item.type === "classify") {
+            const classDiv = document.createElement("div");
+            classDiv.className = "classify-container";
+
+            const pool = document.createElement("div");
+            pool.className = "drag-items-pool";
+            pool.ondragover = e => e.preventDefault();
+            pool.ondrop = e => { e.preventDefault(); const id = e.dataTransfer.getData("text"); pool.appendChild(document.getElementById(id)); };
+
+            [...item.items].sort(() => Math.random() - 0.5).forEach(it => {
+               const el = document.createElement("div");
+               el.className = "drag-item";
+               el.draggable = true;
+               el.id = it.id;
+               el.dataset.category = it.category;
+               el.innerText = it.text;
+               el.ondragstart = e => e.dataTransfer.setData("text", it.id);
+               pool.appendChild(el);
+            });
+
+            const catGrid = document.createElement("div");
+            catGrid.className = "drop-categories";
+
+            item.categories.forEach(cat => {
+               const zone = document.createElement("div");
+               zone.className = "drop-zone";
+               zone.dataset.category = cat;
+               zone.innerHTML = `<h4>${cat}</h4>`;
+               zone.ondragover = e => e.preventDefault();
+               zone.ondrop = e => {
+                  e.preventDefault();
+                  const id = e.dataTransfer.getData("text");
+                  zone.appendChild(document.getElementById(id));
+               };
+               catGrid.appendChild(zone);
+            });
+
+            classDiv.appendChild(pool);
+            classDiv.appendChild(catGrid);
+            container.appendChild(classDiv);
+
+            const subBtn = document.createElement("button");
+            subBtn.className = "submit-btn";
+            subBtn.innerText = "分類をチェック！";
+            subBtn.onclick = () => {
+               let isCorrect = pool.children.length === 0;
+               document.querySelectorAll(".drop-zone").forEach(z => {
+                  const targetCat = z.dataset.category;
+                  z.querySelectorAll(".drag-item").forEach(i => {
+                     if (i.dataset.category !== targetCat) isCorrect = false;
+                  });
+               });
+               checkAnswer(isCorrect);
+            };
+            container.appendChild(subBtn);
+         }
+         else if (item.type === "sort") {
+            renderSortQuiz(container, item);
+         }
+         else if (item.type === "puzzle") {
+            render4x6Puzzle(container, item.imageUrl);
+         }
+      }
+
+      /* === 並び替えクイズのUI＆操作性改善レンダラー === */
+      function renderSortQuiz(container, item) {
+         const sortList = document.createElement("div");
+         sortList.className = "sort-list";
+
+         const shuffled = [...item.items].sort(() => Math.random() - 0.5);
+
+         shuffled.forEach(it => {
+            const el = document.createElement("div");
+            el.className = "sort-item";
+            el.id = it.id;
+
+            el.innerHTML = `
+               <span class="sort-handle">☰</span>
+               <span class="sort-num"></span>
+               <span class="sort-text">${it.text}</span>
+               <div class="sort-controls">
+                  <button type="button" class="btn-sort-move btn-up">▲ うえへ</button>
+                  <button type="button" class="btn-sort-move btn-down">▼ したへ</button>
+               </div>
+            `;
+
+            // ボタンによる上下移動
+            el.querySelector(".btn-up").onclick = (e) => {
+               e.stopPropagation();
+               const prev = el.previousElementSibling;
+               if (prev) {
+                  sortList.insertBefore(el, prev);
+                  updateSortNumbers(sortList);
+               }
+            };
+
+            el.querySelector(".btn-down").onclick = (e) => {
+               e.stopPropagation();
+               const next = el.nextElementSibling;
+               if (next) {
+                  sortList.insertBefore(next, el);
+                  updateSortNumbers(sortList);
+               }
+            };
+
+            // タッチ・Pointerイベントによるドラッグ＆ドロップ実装
+            initSortItemDrag(el, sortList);
+
+            sortList.appendChild(el);
+         });
+
+         container.appendChild(sortList);
+         updateSortNumbers(sortList);
+
+         const subBtn = document.createElement("button");
+         subBtn.className = "submit-btn";
+         subBtn.innerText = "じゅんばんをチェック！";
+         subBtn.onclick = () => {
+            const currentOrder = Array.from(sortList.children).map(c => c.id);
+            const isCorrect = JSON.stringify(currentOrder) === JSON.stringify(item.correctOrder);
+            checkAnswer(isCorrect);
+         };
+         container.appendChild(subBtn);
+      }
+
+      function updateSortNumbers(sortList) {
+         Array.from(sortList.children).forEach((child, idx) => {
+            const numEl = child.querySelector(".sort-num");
+            if (numEl) numEl.innerText = idx + 1;
+         });
+      }
+
+      function initSortItemDrag(el, sortList) {
+         let isDragging = false;
+         let startY = 0;
+
+         el.addEventListener("pointerdown", (e) => {
+            // ボタンタップ時はドラッグ処理を行わない
+            if (e.target.closest(".btn-sort-move")) return;
+
+            isDragging = true;
+            startY = e.clientY;
+            el.classList.add("dragging");
+            el.setPointerCapture(e.pointerId);
+         });
+
+         el.addEventListener("pointermove", (e) => {
+            if (!isDragging) return;
+            const currentY = e.clientY;
+            const siblings = Array.from(sortList.children).filter(c => c !== el);
+
+            let nextSibling = siblings.find(sibling => {
+               const box = sibling.getBoundingClientRect();
+               return currentY < box.top + box.height / 2;
+            });
+
+            if (nextSibling) {
+               sortList.insertBefore(el, nextSibling);
+            } else {
+               sortList.appendChild(el);
+            }
+            updateSortNumbers(sortList);
+         });
+
+         const stopDrag = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            el.classList.remove("dragging");
+            try { el.releasePointerCapture(e.pointerId); } catch (err) { }
+         };
+
+         el.addEventListener("pointerup", stopDrag);
+         el.addEventListener("pointercancel", stopDrag);
+      }
+
+      function render4x6Puzzle(container, imageUrl) {
+         boardState = Array.from({ length: BOARD_ROWS }, () => Array(BOARD_COLS).fill(null));
+
+         const mainWrap = document.createElement("div");
+         mainWrap.className = "puzzle-board-container";
+
+         const board = document.createElement("div");
+         board.className = "puzzle-board-4x6";
+         board.id = "puzzleBoard";
+
+         for (let r = 0; r < BOARD_ROWS; r++) {
+            for (let c = 0; c < BOARD_COLS; c++) {
+               const cell = document.createElement("div");
+               cell.className = "puzzle-cell";
+               cell.dataset.r = r;
+               cell.dataset.c = c;
+               board.appendChild(cell);
+            }
+         }
+
+         const pool = document.createElement("div");
+         pool.className = "puzzle-mino-pool";
+         pool.id = "minoPool";
+
+         mainWrap.appendChild(board);
+         mainWrap.appendChild(pool);
+         container.appendChild(mainWrap);
+
+         const img = new Image();
+         img.crossOrigin = "anonymous";
+         img.src = imageUrl;
+         img.onload = () => {
+            const minos = generatePolyominos(BOARD_ROWS, BOARD_COLS);
+            minos.forEach((mino, minoIdx) => {
+               const minoEl = document.createElement("div");
+               minoEl.className = "mino-piece";
+               minoEl.id = `mino_${minoIdx}`;
+
+               let minR = BOARD_ROWS, maxR = -1, minC = BOARD_COLS, maxC = -1;
+               mino.blocks.forEach(b => {
+                  if (b.r < minR) minR = b.r;
+                  if (b.r > maxR) maxR = b.r;
+                  if (b.c < minC) minC = b.c;
+                  if (b.c > maxC) maxC = b.c;
+               });
+
+               const cellSize = 55;
+               const wCols = maxC - minC + 1;
+               const hRows = maxR - minR + 1;
+
+               minoEl.style.width = `${wCols * cellSize}px`;
+               minoEl.style.height = `${hRows * cellSize}px`;
+               minoEl.dataset.originR = minR;
+               minoEl.dataset.originC = minC;
+               minoEl.dataset.wCols = wCols;
+               minoEl.dataset.hRows = hRows;
+
+               const shape = mino.blocks.map(b => ({ relR: b.r - minR, relC: b.c - minC }));
+               minoEl.dataset.shape = JSON.stringify(shape);
+
+               mino.blocks.forEach(b => {
+                  const bEl = document.createElement("div");
+                  bEl.className = "mino-block";
+                  const relR = b.r - minR;
+                  const relC = b.c - minC;
+                  bEl.style.left = `${relC * cellSize}px`;
+                  bEl.style.top = `${relR * cellSize}px`;
+                  bEl.style.backgroundImage = `url(${imageUrl})`;
+                  bEl.style.backgroundSize = `${BOARD_COLS * cellSize}px ${BOARD_ROWS * cellSize}px`;
+                  bEl.style.backgroundPosition = `-${b.c * cellSize}px -${b.r * cellSize}px`;
+                  minoEl.appendChild(bEl);
+               });
+
+               initPointerDrag(minoEl, board, pool, cellSize);
+               pool.appendChild(minoEl);
+            });
+         };
+
+         const subBtn = document.createElement("button");
+         subBtn.className = "submit-btn";
+         subBtn.innerText = "パズルを答えあわせ！";
+         subBtn.onclick = () => {
+            let isCorrect = true;
+            if (pool.children.length > 0) isCorrect = false;
+
+            document.querySelectorAll(".mino-piece").forEach(m => {
+               const targetR = parseInt(m.dataset.targetR);
+               const targetC = parseInt(m.dataset.targetC);
+               const originR = parseInt(m.dataset.originR);
+               const originC = parseInt(m.dataset.originC);
+
+               if (isNaN(targetR) || targetR !== originR || targetC !== originC) {
+                  isCorrect = false;
+               }
+            });
+            checkAnswer(isCorrect);
+         };
+         container.appendChild(subBtn);
+      }
+
+      function generatePolyominos(rows, cols) {
+         const grid = Array.from({ length: rows }, () => Array(cols).fill(false));
+         const minos = [];
+
+         for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+               if (grid[r][c]) continue;
+
+               const targetSize = Math.floor(Math.random() * 3) + 2;
+               const blocks = [{ r, c }];
+               grid[r][c] = true;
+
+               while (blocks.length < targetSize) {
+                  const neighbors = [];
+                  blocks.forEach(b => {
+                     [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(([dr, dc]) => {
+                        const nr = b.r + dr, nc = b.c + dc;
+                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !grid[nr][nc]) {
+                           if (!neighbors.some(n => n.r === nr && n.c === nc)) {
+                              neighbors.push({ r: nr, c: nc });
+                           }
+                        }
+                     });
+                  });
+
+                  if (neighbors.length === 0) break;
+
+                  const nextCell = neighbors[Math.floor(Math.random() * neighbors.length)];
+                  grid[nextCell.r][nextCell.c] = true;
+                  blocks.push(nextCell);
+               }
+               minos.push({ blocks });
+            }
+         }
+         return minos;
+      }
+
+      function initPointerDrag(minoEl, board, pool, cellSize) {
+         let startX, startY;
+         let initialLeft, initialTop;
+         let isDragging = false;
+
+         minoEl.onpointerdown = (e) => {
+            e.preventDefault();
+            minoEl.setPointerCapture(e.pointerId);
+            isDragging = true;
+
+            minoEl.classList.add("dragging");
+
+            startX = e.clientX;
+            startY = e.clientY;
+
+            if (minoEl.dataset.targetR !== undefined) {
+               clearMinoFromBoardState(minoEl);
+            }
+
+            const rect = minoEl.getBoundingClientRect();
+            if (minoEl.parentElement !== document.body) {
+               minoEl.style.position = "fixed";
+               minoEl.style.left = `${rect.left}px`;
+               minoEl.style.top = `${rect.top}px`;
+               document.body.appendChild(minoEl);
+            }
+
+            initialLeft = rect.left;
+            initialTop = rect.top;
+         };
+
+         minoEl.onpointermove = (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            minoEl.style.left = `${initialLeft + dx}px`;
+            minoEl.style.top = `${initialTop + dy}px`;
+         };
+
+         minoEl.onpointerup = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+            minoEl.releasePointerCapture(e.pointerId);
+            minoEl.classList.remove("dragging");
+
+            const boardRect = board.getBoundingClientRect();
+            const minoRect = minoEl.getBoundingClientRect();
+
+            const relX = minoRect.left - boardRect.left;
+            const relY = minoRect.top - boardRect.top;
+
+            const dropC = Math.round(relX / cellSize);
+            const dropR = Math.round(relY / cellSize);
+
+            const shape = JSON.parse(minoEl.dataset.shape || "[]");
+            const wCols = parseInt(minoEl.dataset.wCols);
+            const hRows = parseInt(minoEl.dataset.hRows);
+
+            const inBounds = (dropR >= 0 && dropR + hRows <= BOARD_ROWS && dropC >= 0 && dropC + wCols <= BOARD_COLS);
+
+            let canPlace = inBounds;
+            if (inBounds) {
+               shape.forEach(b => {
+                  const checkR = dropR + b.relR;
+                  const checkC = dropC + b.relC;
+                  if (boardState[checkR][checkC] !== null) {
+                     canPlace = false;
+                  }
+               });
+            }
+
+            if (canPlace) {
+               minoEl.style.position = "absolute";
+               minoEl.style.left = `${dropC * cellSize}px`;
+               minoEl.style.top = `${dropR * cellSize}px`;
+               minoEl.dataset.targetR = dropR;
+               minoEl.dataset.targetC = dropC;
+
+               shape.forEach(b => {
+                  boardState[dropR + b.relR][dropC + b.relC] = minoEl.id;
+               });
+
+               board.appendChild(minoEl);
+            } else {
+               returnToPool(minoEl, pool);
+            }
+         };
+      }
+
+      function clearMinoFromBoardState(minoEl) {
+         const targetR = parseInt(minoEl.dataset.targetR);
+         const targetC = parseInt(minoEl.dataset.targetC);
+         const shape = JSON.parse(minoEl.dataset.shape || "[]");
+
+         if (!isNaN(targetR) && !isNaN(targetC)) {
+            shape.forEach(b => {
+               if (boardState[targetR + b.relR] && boardState[targetR + b.relR][targetC + b.relC] === minoEl.id) {
+                  boardState[targetR + b.relR][targetC + b.relC] = null;
+               }
+            });
+         }
+         delete minoEl.dataset.targetR;
+         delete minoEl.dataset.targetC;
+      }
+
+      function returnToPool(minoEl, pool) {
+         clearMinoFromBoardState(minoEl);
+         minoEl.style.position = "relative";
+         minoEl.style.left = "0px";
+         minoEl.style.top = "0px";
+         pool.appendChild(minoEl);
+      }
+
+      function checkAnswer(isCorrect) {
+         const overlay = document.getElementById("overlay");
+         const overlayContent = document.getElementById("overlayContent");
+         overlay.classList.remove("hidden");
+
+         overlayContent.innerHTML = `<div class="drumroll-text">ジャンジャンジャン...</div>`;
+         audioObjects.drumroll.currentTime = 0;
+         audioObjects.drumroll.play().catch(() => { });
+
+         setTimeout(() => {
+            audioObjects.drumroll.pause();
+            if (isCorrect) {
+               audioObjects.correct.currentTime = 0;
+               audioObjects.correct.play().catch(() => { });
+               overlayContent.innerHTML = `<div class="result-mark mark-correct">⭕ だいせいかい！</div>`;
+            } else {
+               audioObjects.wrong.currentTime = 0;
+               audioObjects.wrong.play().catch(() => { });
+               overlayContent.innerHTML = `<div class="result-mark mark-wrong">❌ おしい！</div>`;
+            }
+
+            setTimeout(() => {
+               overlay.classList.add("hidden");
+               showExplanation(isCorrect);
+            }, CONFIG.resultDisplayTime);
+
+         }, CONFIG.drumrollDuration);
+      }
+
+      function showExplanation(isCorrect) {
+         const q = quizData[currentIdx];
+         const box = document.getElementById("explanationBox");
+
+         document.getElementById("expStatus").innerText = isCorrect ? "🎉 せいかい！" : "😅 ざんねん…";
+         document.getElementById("expText").innerText = q.explanation || "";
+         box.classList.remove("hidden");
+      }
+   </script>
+</body>
+
+</html>
