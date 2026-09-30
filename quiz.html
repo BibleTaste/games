@@ -597,7 +597,7 @@
 
    <script>
       const CONFIG = {
-         drumrollDuration: 8000,
+         drumrollDuration: 3000,
          resultDisplayTime: 3000,
          sounds: {
             drumroll: "https://otologic.jp/sounds/se/pre2/Quiz-Results01-3.mp3",
@@ -606,9 +606,7 @@
          }
       };
 
-      /* ========================================================
-         ★ クイズテーマデータ集（新しいテーマを追加する場合はここへ挿入）
-      ======================================================== */
+      /* クイズテーマデータ集 */
       const quizThemes = [
          {
             id: "lesson16",
@@ -757,13 +755,13 @@
                   "type": "slide",
                   "badge": "📚 がくしゅうスライド",
                   "title": "イエス・キリストの ちじょうでの あゆみ",
-                  "content": "イエスは　どんなひと　だったかな？\nイエスのことを　たくさんしると、もっとイエスとエホバを　すきになるよ。\nみゆちゃんは　イエスのどんなところを　まねしたい？",
+                  "content": "イエスは どんなひと だったかな？\nイエスのことを たくさんしると、もっとイエスとエホバを すきになるよ。\nみゆちゃんは イエスのどんなところを まねしたい？",
                   "image": "https://cms-imgp.jw-cdn.org/img/p/2026686/univ/art/2026686_univ_cnt_1_lg.jpg"
                },
                {
                   "type": "single",
                   "badge": "だい1もん",
-                  "question": "イエスと　エホバは　どんなところが　にている？",
+                  "question": "イエスと エホバは どんなところが にている？",
                   "options": [
                      { "text": "ひげ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj37JLhskKVoCKKK6SHH57nC9D6aiZB12B4LgEGCmmGuYIzkiwFhj7k8afiJIKGeTFZKeb7YzHv9pk2TvxSH4Niee22Fx3xk_DKxg4vs5llKjScTREP1xuUoUrP01IekiK6Etm-sPQNpJ/s400/hige_kirei.png" },
                      { "text": "おおきさ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiee3vhacyNMc9ehwDC8C9umyT3EmclyK4_VQgraCNIZD9RVxPkhZC-kn3CeVugZqYmcyWEIG7eJraHwdQbdi6d1MaFlUtdMuDRv4VFm2DlfWmdOp8OmeS-zLXGJGPsCtuP2h3H8AqmOKL8/s400/donguri_seikurabe.png" },
@@ -771,12 +769,12 @@
                      { "text": "せいかく", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi74alfWuh246QoO4_YSvG_DT0wbFkeRrp4qwgUPtbM-qT4XL6JS1S4lr2N8r2pQ4KqWINXjd2m8MP4RQRYgyGYu2KxcbfBAEqtIVurozvA_xDcx8agjSic3v__afeITqotx4gatmhUJwFs/s300/hyoujou_text_man_nikoniko.png" }
                   ],
                   "answer": "せいかく",
-                  "explanation": "イエスと　エホバは　せいかくが　そっくり！　イエスをしると　エホバのことを　もっとすきになるよ"
+                  "explanation": "イエスと エホバは せいかくが そっくり！ イエスをしると エホバのことを もっとすきになるよ"
                },
                {
                   "type": "multiple",
                   "badge": "だい2もん",
-                  "question": "イエスが　エホバを　あいていることは　どうしてわかる？（あてはまるものを えらぼう）",
+                  "question": "イエスが エホバを あいていることは どうしてわかる？（あてはまるものを えらぼう）",
                   "image": "https://cms-imgp.jw-cdn.org/img/p/1102016088/univ/art/1102016088_univ_lsr_lg.jpg",
                   "options": [
                      { "text": "エホバに\nいつもしたがった" },
@@ -789,7 +787,7 @@
                      "エホバのことを\nひとにはなした",
                      "エホバと\nなかよくなれるように\nひとをたすけた"
                   ],
-                  "explanation": "イエスは　エホバを　あいしていたから、エホバの　いうことを　よくきいたよ。　そして、エホバが　すてきなかみだと　ひとびとに　しらせたよ。"
+                  "explanation": "イエスは エホバを あいしていたから、エホバの いうことを よくきいたよ。 そして、エホバが すてきなかみだと ひとびとに しらせたよ。"
                },
                {
                   "type": "multiple",
@@ -882,6 +880,7 @@
       let currentThemeIdx = null; // null の時はホーム画面
       let currentQuestionIdx = 0;
       let audioObjects = {};
+      let isAudioUnlocked = false;
 
       const BOARD_ROWS = 4;
       const BOARD_COLS = 6;
@@ -894,6 +893,78 @@
 
          goHome();
       };
+
+      /* iPad等のブラウザで自動再生制限を解除(アンロック)する関数 */
+      function unlockAudio() {
+         if (isAudioUnlocked) return;
+         Object.values(audioObjects).forEach(audio => {
+            audio.play().then(() => {
+               audio.pause();
+               audio.currentTime = 0;
+            }).catch(() => { });
+         });
+         isAudioUnlocked = true;
+      }
+
+      /* 安全な再生処理 */
+      function playAudio(type) {
+         unlockAudio();
+         const audio = audioObjects[type];
+         if (audio) {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.log("Audio play blocked:", e));
+         }
+      }
+
+      function stopAudio(type) {
+         const audio = audioObjects[type];
+         if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+         }
+      }
+
+      /* 正誤判定・演出表示 */
+      function checkAnswer(isCorrect) {
+         unlockAudio();
+         const overlay = document.getElementById("overlay");
+         const overlayContent = document.getElementById("overlayContent");
+         overlay.classList.remove("hidden");
+
+         overlayContent.innerHTML = `<div class="drumroll-text">こたえは...</div>`;
+         playAudio('drumroll');
+
+         setTimeout(() => {
+            stopAudio('drumroll');
+            if (isCorrect) {
+               playAudio('correct');
+               overlayContent.innerHTML = `<div class="result-mark mark-correct">⭕ せいかい！</div>`;
+            } else {
+               playAudio('wrong');
+               overlayContent.innerHTML = `<div class="result-mark mark-wrong">❌ ざんねん！</div>`;
+            }
+
+            setTimeout(() => {
+               overlay.classList.add("hidden");
+               showExplanation(isCorrect);
+            }, CONFIG.resultDisplayTime);
+
+         }, CONFIG.drumrollDuration);
+      }
+
+      function showExplanation(isCorrect) {
+         const expBox = document.getElementById("explanationBox");
+         const expStatus = document.getElementById("expStatus");
+         const expText = document.getElementById("expText");
+
+         const item = quizThemes[currentThemeIdx].questions[currentQuestionIdx];
+
+         expStatus.innerText = isCorrect ? "🎉 せいかい！" : "🤔 おしい！";
+         expStatus.style.color = isCorrect ? "#16a34a" : "#dc2626";
+         expText.innerText = item.explanation || "";
+
+         expBox.classList.remove("hidden");
+      }
 
       /* ホーム画面を表示 */
       function goHome() {
@@ -930,6 +1001,7 @@
 
       /* テーマを選択してクイズを開始 */
       function startTheme(themeIdx) {
+         unlockAudio();
          currentThemeIdx = themeIdx;
          currentQuestionIdx = 0;
 
@@ -1391,6 +1463,26 @@
          return minos;
       }
 
+      function clearMinoFromBoardState(minoEl) {
+         const targetR = parseInt(minoEl.dataset.targetR);
+         const targetC = parseInt(minoEl.dataset.targetC);
+         const shape = JSON.parse(minoEl.dataset.shape || "[]");
+
+         if (!isNaN(targetR) && !isNaN(targetC)) {
+            shape.forEach(b => {
+               const r = targetR + b.relR;
+               const c = targetC + b.relC;
+               if (r >= 0 && r < BOARD_ROWS && c >= 0 && c < BOARD_COLS) {
+                  if (boardState[r][c] === minoEl.id) {
+                     boardState[r][c] = null;
+                  }
+               }
+            });
+         }
+         delete minoEl.dataset.targetR;
+         delete minoEl.dataset.targetC;
+      }
+
       function initPointerDrag(minoEl, board, pool, cellSize) {
          let startX, startY;
          let initialLeft, initialTop;
@@ -1473,72 +1565,12 @@
 
                board.appendChild(minoEl);
             } else {
-               returnToPool(minoEl, pool);
+               minoEl.style.position = "relative";
+               minoEl.style.left = "0px";
+               minoEl.style.top = "0px";
+               pool.appendChild(minoEl);
             }
          };
-      }
-
-      function clearMinoFromBoardState(minoEl) {
-         const targetR = parseInt(minoEl.dataset.targetR);
-         const targetC = parseInt(minoEl.dataset.targetC);
-         const shape = JSON.parse(minoEl.dataset.shape || "[]");
-
-         if (!isNaN(targetR) && !isNaN(targetC)) {
-            shape.forEach(b => {
-               if (boardState[targetR + b.relR] && boardState[targetR + b.relR][targetC + b.relC] === minoEl.id) {
-                  boardState[targetR + b.relR][targetC + b.relC] = null;
-               }
-            });
-         }
-         delete minoEl.dataset.targetR;
-         delete minoEl.dataset.targetC;
-      }
-
-      function returnToPool(minoEl, pool) {
-         clearMinoFromBoardState(minoEl);
-         minoEl.style.position = "relative";
-         minoEl.style.left = "0px";
-         minoEl.style.top = "0px";
-         pool.appendChild(minoEl);
-      }
-
-      /* 判定＆演出 */
-      function checkAnswer(isCorrect) {
-         const overlay = document.getElementById("overlay");
-         const overlayContent = document.getElementById("overlayContent");
-         overlay.classList.remove("hidden");
-
-         overlayContent.innerHTML = `<div class="drumroll-text">ジャンジャンジャン...</div>`;
-         audioObjects.drumroll.currentTime = 0;
-         audioObjects.drumroll.play().catch(() => { });
-
-         setTimeout(() => {
-            audioObjects.drumroll.pause();
-            if (isCorrect) {
-               audioObjects.correct.currentTime = 0;
-               audioObjects.correct.play().catch(() => { });
-               overlayContent.innerHTML = `<div class="result-mark mark-correct">⭕ だいせいかい！</div>`;
-            } else {
-               audioObjects.wrong.currentTime = 0;
-               audioObjects.wrong.play().catch(() => { });
-               overlayContent.innerHTML = `<div class="result-mark mark-wrong">❌ おしい！</div>`;
-            }
-
-            setTimeout(() => {
-               overlay.classList.add("hidden");
-               showExplanation(isCorrect);
-            }, CONFIG.resultDisplayTime);
-
-         }, CONFIG.drumrollDuration);
-      }
-
-      function showExplanation(isCorrect) {
-         const q = quizThemes[currentThemeIdx].questions[currentQuestionIdx];
-         const box = document.getElementById("explanationBox");
-
-         document.getElementById("expStatus").innerText = isCorrect ? "🎉 せいかい！" : "😅 ざんねん…";
-         document.getElementById("expText").innerText = q.explanation || "";
-         box.classList.remove("hidden");
       }
    </script>
 </body>
