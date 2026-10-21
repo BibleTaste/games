@@ -286,125 +286,158 @@ const quizThemes = [
       id: "lesson18",
       title: "ほんものの クリスチャンは どんなひとたち？",
       description: "「いつまでも しあわせに くらせます」レッスン１８の クイズだよ",
-      image: "https://placehold.co/600x400?text=L18-cover",
+      image: "https://cms-imgp.jw-cdn.org/img/p/1102021218/J/art/1102021218_J_cnt_01_lg.jpg",
       questions: [
          {
             "type": "slide",
             "badge": "📚 がくしゅうスライド",
-            "title": "ほんものの クリスチャンって どんな ひと？",
-            "content": "イエスの でしは、イエスの おしえを まもって いきる ひとたちだよ。\n\nヨハネ 13:34，35を いっしょに よんでみよう！\n\nみゆちゃんは、イエスの でしの ことを しっている？",
-            "image": "https://placehold.co/600x400?text=L18-slide1"
+            "title": "イエスの たいせつな おしえ",
+            "content": "イエスは、でしたちに とっても たいせつな おしえを あたえました。\n\nヨハネ 13:34，35を いっしょに よんでみましょう！\n\nイエスの ほんものの でしには、どんな とくちょうが あるでしょうか？",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_01_lg.jpg"
          },
          {
             "type": "single",
             "badge": "だい1もん",
-            "question": "イエスの ほんものの でしは、なにで わかる？",
+            "question": "イエスの ほんものの でしは、なにを みると わかりますか？",
             "options": [
-               { "text": "あい（だいすきの きもち）", "image": "https://placehold.co/400x300?text=L18-q1-a" },
-               { "text": "おかね", "image": "https://placehold.co/400x300?text=L18-q1-b" },
-               { "text": "かっこいい ふく", "image": "https://placehold.co/400x300?text=L18-q1-c" },
-               { "text": "おおきな いえ", "image": "https://placehold.co/400x300?text=L18-q1-d" }
+               { "text": "おたがいを 愛する きもち", "image": "https://cms-imgp.jw-cdn.org/img/p/1102016091/univ/art/1102016091_univ_cnt_2_md.jpg" },
+               { "text": "じまんを すること", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqgYlZg9hDmCYasDNFhgIM1bqLhnOElLJgFRMUkJGyrmwR9GS6s-Y8yp7ZKslJK65WLVb8C6vQsUyan42vqxJY6WwZvTf6RCZutPNrED2HJ1FsFFmopr7qowjpc9IiN1M2iUjOiJfKMh1C/s800/job_gyogyou_ryoushi.png" },
+               { "text": "いそがしく 歩くこと", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj37JLhskKVoCKKK6SHH57nC9D6aiZB12B4LgEGCmmGuYIzkiwFhj7k8afiJIKGeTFZKeb7YzHv9pk2TvxSH4Niee22Fx3xk_DKxg4vs5llKjScTREP1xuUoUrP01IekiK6Etm-sPQNpJ/s400/hige_kirei.png" },
+               { "text": "大きな こえで おしゃべりする", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjvpcHJWc06O2fOJyGvDPJYaEyG_IkSVrFcwdnbTYsG1siEGQi65HQvCnAN39SBawW7NfV785Hke74Xr6wZmph9jV4qxGNwCLoqW6TYeDnWAmhNsqNJ_JnPFXHxF4mSU1Ta47q2ywY7KGA/s400/mail.png" }
             ],
-            "answer": "あい（だいすきの きもち）",
-            "explanation": "せいかい！ イエスは「おたがいに あいしあう ひとが ほんものの でしだよ」と おしえたよ。（ヨハネ 13:34，35）"
+            "answer": "おたがいを 愛する きもち",
+            "explanation": "イエスは「おたがいに 愛し合うなら、すべての 人が あなたたちは わたしの でしだと しるのです」と おしえました。（ヨハネ 13:34，35）"
          },
          {
             "type": "binary",
             "badge": "だい2もん",
-            "question": "イエスは「おたがいを あいしあいなさい」と おしえた？ ⭕か ❌か？",
-            "image": "https://placehold.co/600x400?text=L18-q2",
+            "question": "イエスは「みんなで けんかをしなさい」と おしえた？ ⭕か ❌か？",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/2026523/univ/art/2026523_univ_cnt_1_xl.jpg",
             "options": ["⭕ ほんとう（○）", "❌ ちがう（✕）"],
-            "answer": "⭕ ほんとう（○）",
-            "explanation": "せいかいは ⭕！ イエスは でしたちに「おたがいを あいしあいなさい」と おしえたよ。"
+            "answer": "❌ ちがう（✕）",
+            "explanation": "イエスは けんかではなく、「おたがいを 愛し合いなさい」と あたたかく おしえました。"
          },
          {
             "type": "bible-first",
             "badge": "だい3もん",
-            "image": "https://placehold.co/600x400?text=L18-q3",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102016088/univ/art/1102016088_univ_lsr_lg.jpg",
             "bibleText": "「みんなが おたがいを あいしあって いれば、すべての ひとが、あなたたちは イエスの でしだと わかります」（ヨハネ 13:35）",
-            "question": "ほんものの クリスチャンは、おたがいを どう おもっている？",
-            "options": ["あいしている", "むしする", "きらい", "まけたくない"],
-            "answer": "あいしている",
-            "explanation": "せいかい！ ほんものの クリスチャンは、おたがいを あいしあって いるよ。"
+            "question": "この せんくから、イエスの でしにとって いちばん たいせつな ことは なんだと わかりますか？",
+            "options": ["愛し合うこと", "いじわるすること", "しらんぷりすること", "おこること"],
+            "answer": "愛し合うこと",
+            "explanation": "イエスの でしたちは、いつも 心を こめて おたがいを たいせつに しています。"
          },
          {
             "type": "multiple",
             "badge": "だい4もん（ふくすう せんたく）",
-            "question": "みゆちゃんは、どうやって ひとに あいを しめせる？（あてはまるものを えらぼう）",
+            "question": "かぞくや お友達に「愛」を しめす ほうほうとして、せいしょの おしえに あてはまるものは どれですか？（すべて えらぼう）",
             "options": [
-               { "text": "やさしく おはなしする", "image": "https://placehold.co/400x300?text=L18-q4-a" },
-               { "text": "おもちゃを かしてあげる", "image": "https://placehold.co/400x300?text=L18-q4-b" },
-               { "text": "いじわるを いう", "image": "https://placehold.co/400x300?text=L18-q4-c" },
-               { "text": "「ありがとう」と いう", "image": "https://placehold.co/400x300?text=L18-q4-d" }
+               { "text": "にっこり えがおで あいさつする", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi74alfWuh246QoO4_YSvG_DT0wbFkeRrp4qwgUPtbM-qT4XL6JS1S4lr2N8r2pQ4KqWINXjd2m8MP4RQRYgyGYu2KxcbfBAEqtIVurozvA_xDcx8agjSic3v__afeITqotx4gatmhUJwFs/s300/hyoujou_text_man_nikoniko.png" },
+               { "text": "おもちゃを やさしく かしてあげる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgkkPWu6zRmA3imW4bJ2Dzs3cNBDXumZrikakhGS9YK0-r_D6cFhq0s2oTb0eGNexDku5KXcNSynoJz0vuC0Cg_4-GnoK0pe_XOx3aZmYkD6jGfYwrzrFRBVs-6esgrxYKbRiNByuXCzok/s400/father_nigaoe.png" },
+               { "text": "いやな ことばを 言う", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWJu0T6R-qnhzx0AF1tf8egPbUuh1m2sxWDI6UpU22ZiydNSQo2_Q3hK3gSW2CoHIfQ0J1GrG0LVBR0Jgt8PUmMZ0Yz76JH-DQFCmwf7c8IAMA5oVnZ2Naex10IQb5Iw15QqeF2dLTt7Gg/s500/arashi.png" },
+               { "text": "「ありがとう」と かんしゃを つたえる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgQ0H1D8_JnbRVeNfIhXqhMqm73tzwJYb-E5qCIUzIyoyjnkHQt_7wmJxzVtq0eHRnZGiVQpT0YPhna5abdhkfmnVdhI8tFtf378R61IOMW9187K-p6P_Q5ZvrRbqwGflnTzBvCDrurrD8/s500/family_kaji_tetsudai.png" }
             ],
             "answer": [
-               "やさしく おはなしする",
-               "おもちゃを かしてあげる",
-               "「ありがとう」と いう"
+               "にっこり えがおで あいさつする",
+               "おもちゃを やさしく かしてあげる",
+               "「ありがとう」と かんしゃを つたえる"
             ],
-            "explanation": "やさしい ことばや おもいやりの ある こうどうが、あいを しめす ことに なるよ。みゆちゃんは、だれに やさしく したい？"
-         },
-         {
-            "type": "slide",
-            "badge": "📚 がくしゅうスライド",
-            "title": "もうひとつ だいじな こと",
-            "content": "ほんものの クリスチャンは、かみの おうこくの よい しらせを、ほかの ひとにも つたえているよ。\n\nイエスの でしたちも、まいにち よい しらせを つたえたんだよ。（使徒 5:42）",
-            "image": "https://placehold.co/600x400?text=L18-slide2"
+            "explanation": "やさしい ことばや おもいやりの ある こうどうは、イエスの おしえどおりの いきかたです。"
          },
          {
             "type": "single",
             "badge": "だい5もん",
-            "question": "ほんものの クリスチャンは、ひとに なにを つたえるのが すき？",
+            "question": "イエスは でしたちに「すべての くにの 人を でしとしなさい」と おしえましたが、それは どんな きもちからですか？",
             "options": [
-               { "text": "かみの おうこくの よい しらせ", "image": "https://placehold.co/400x300?text=L18-q5-a" },
-               { "text": "おいしい おかしの ばしょ", "image": "https://placehold.co/400x300?text=L18-q5-b" },
-               { "text": "あたらしい ゲーム", "image": "https://placehold.co/400x300?text=L18-q5-c" },
-               { "text": "あしたの てんき", "image": "https://placehold.co/400x300?text=L18-q5-d" }
+               { "text": "人々に 神の 愛や よい しらせを 知ってほしいから", "image": "https://cms-imgp.jw-cdn.org/img/p/2016403/univ/art/2016403_univ_lsr_lg.jpg" },
+               { "text": "たくさん おしゃべりを したいから", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpklE9mfu57YZ7PyYcppg9XSpqOxyJYxPjLbf5Cj-QdoZ52G4dDeCioArypNUWp3vueXc4EFE3BAvD7DvvfJdsrnn60vQ2-jDWWNv_sKqXvzL_Gas5Na8vfLRuhK5rfV7hLWAAt8pHdjpM/s400/sleep_nemurenai_woman.png" },
+               { "text": "おそとに でて たくさん あるきたいから", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg25JicWql0BeKQwPegUTbApgHtRR7zFFum20Zed1jxKdokrJoMESQ96j2CT5OzhiHi2U5LHSegsDz4CrMT9Y9clPpi7H2I5k7FNuShdg0iCNXWz-LqhccVuFzPTY76gpcU3LHUD5syP5NC/s400/pan_bread_set.png" },
+               { "text": "とおくへ りょこうに いきたいから", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXkGXZxHE8BWUK_i3-mS0T3CdN1OQkSRVoc5yndasD3c1Xncpbh6jgAf8EJyis3tEcrBnrpsqhK9ne240vpiAigwD1NAU-2o-uFXh-BnFQ0i5zoIw2oq3hyphenhyphen8Qp84OYz7diDw2PBpZYqI4d/s400/family_smartphone_game.png" }
             ],
-            "answer": "かみの おうこくの よい しらせ",
-            "explanation": "せいかい！ よい しらせを つたえると、ひとが エホバを しる たすけに なるよ。"
+            "answer": "人々に 神の 愛や よい しらせを 知ってほしいから",
+            "explanation": "エホバと イエスの 深い 愛が あるからこそ、でしたちは よろこんで よい しらせを つたえています。"
+         },
+         {
+            "type": "slide",
+            "badge": "🧸 ちょっといきぬき・きゅうけい",
+            "title": "ここで ちょっと ひといきしよう！",
+            "content": "みゆちゃん、ここまで すごく よく がんばったね！✨\nせすじを ぴん と のばして、大きく しんこきゅうを しよう。\n\nじゅんびが できたら、つぎの もんだいに すすもうね！",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/502018118/univ/art/502018118_univ_lsr_lg.jpg"
+         },
+         {
+            "type": "slide",
+            "badge": "📚 がくしゅうスライド",
+            "title": "よい しらせを つたえる かつどう",
+            "content": "ほんものの でしたちは、神の おうこくの よい しらせを 人々に つたえています。\n\n▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_181_VIDEO' target='_blank' style='color:#0284c7; font-weight:bold;'>【どうが】ほかの 人に つたえる よい しらせ</a> を 見てみよう！",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_03_lg.jpg"
+         },
+         {
+            "type": "single",
+            "badge": "だい6もん",
+            "question": "ほんものの クリスチャンが 人々に つたえる「よい しらせ」とは、おもに なんですか？",
+            "options": [
+               { "text": "神の おうこくが すばらしい みらいを もたらすという 約束", "image": "https://cms-imgp.jw-cdn.org/img/p/2016403/univ/art/2016403_univ_lsr_lg.jpg" },
+               { "text": "おいしい レストランの ばしょ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpklE9mfu57YZ7PyYcppg9XSpqOxyJYxPjLbf5Cj-QdoZ52G4dDeCioArypNUWp3vueXc4EFE3BAvD7DvvfJdsrnn60vQ2-jDWWNv_sKqXvzL_Gas5Na8vfLRuhK5rfV7hLWAAt8pHdjpM/s400/sleep_nemurenai_woman.png" },
+               { "text": "新しい おもちゃの うりあげ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg25JicWql0BeKQwPegUTbApgHtRR7zFFum20Zed1jxKdokrJoMESQ96j2CT5OzhiHi2U5LHSegsDz4CrMT9Y9clPpi7H2I5k7FNuShdg0iCNXWz-LqhccVuFzPTY76gpcU3LHUD5syP5NC/s400/pan_bread_set.png" },
+               { "text": "おもしろい アニメの じかん", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXkGXZxHE8BWUK_i3-mS0T3CdN1OQkSRVoc5yndasD3c1Xncpbh6jgAf8EJyis3tEcrBnrpsqhK9ne240vpiAigwD1NAU-2o-uFXh-BnFQ0i5zoIw2oq3hyphenhyphen8Qp84OYz7diDw2PBpZYqI4d/s400/family_smartphone_game.png" }
+            ],
+            "answer": "神の おうこくが すばらしい みらいを もたらすという 約束",
+            "explanation": "よい しらせを つたえることで、多くの 人が エホバを 知り、希望を 持つことができます。"
+         },
+         {
+            "type": "single",
+            "badge": "だい7もん",
+            "question": "イエスは でしたちに、せんきょう（よい しらせを つたえること）を つづけるうえで、どんな きもちを もつように おしえましたか？",
+            "options": [
+               { "text": "よろこんで 行う", "image": "https://cms-imgp.jw-cdn.org/img/p/1102016091/univ/art/1102016091_univ_cnt_2_md.jpg" },
+               { "text": "いやいやながら 行う", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqgYlZg9hDmCYasDNFhgIM1bqLhnOElLJgFRMUkJGyrmwR9GS6s-Y8yp7ZKslJK65WLVb8C6vQsUyan42vqxJY6WwZvTf6RCZutPNrED2HJ1FsFFmopr7qowjpc9IiN1M2iUjOiJfKMh1C/s800/job_gyogyou_ryoushi.png" },
+               { "text": "だまって 行う", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj37JLhskKVoCKKK6SHH57nC9D6aiZB12B4LgEGCmmGuYIzkiwFhj7k8afiJIKGeTFZKeb7YzHv9pk2TvxSH4Niee22Fx3xk_DKxg4vs5llKjScTREP1xuUoUrP01IekiK6Etm-sPQNpJ/s400/hige_kirei.png" },
+               { "text": "わすれて 行う", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjvpcHJWc06O2fOJyGvDPJYaEyG_IkSVrFcwdnbTYsG1siEGQi65HQvCnAN39SBawW7NfV785Hke74Xr6wZmph9jV4qxGNwCLoqW6TYeDnWAmhNsqNJ_JnPFXHxF4mSU1Ta47q2ywY7KGA/s400/mail.png" }
+            ],
+            "answer": "よろこんで 行う",
+            "explanation": "エホバの 愛を ほかの 人に つたえることは、クリスチャンにとって 大きな よろこびです。"
          },
          {
             "type": "classify",
-            "badge": "だい6もん",
-            "image": "https://placehold.co/600x400?text=L18-q6",
-            "question": "ほんものの クリスチャンが することと、しないことを わけてみよう！",
+            "badge": "だい8もん",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_04_lg.jpg",
+            "question": "エホバと イエスが よろこぶ「すること」と「しないこと」を わけてみましょう！",
             "categories": ["すること", "しないこと"],
             "items": [
-               { "id": "c1", "text": "ひとを あいする", "category": "すること" },
+               { "id": "c1", "text": "ひとを 愛する", "category": "すること" },
                { "id": "c2", "text": "よい しらせを つたえる", "category": "すること" },
-               { "id": "c3", "text": "いじわるを する", "category": "しないこと" },
+               { "id": "c3", "text": "おともだちに いじわるを する", "category": "しないこと" },
                { "id": "c4", "text": "おたがいに たすけあう", "category": "すること" },
-               { "id": "c5", "text": "ひとを ばかにする", "category": "しないこと" }
+               { "id": "c5", "text": "こまっているひとを むしする", "category": "しないこと" }
             ],
-            "explanation": "よく できました！ ほんものの クリスチャンは、あいを だいじに して いるんだね。"
+            "explanation": "せいしょの おしえどおりに 愛の 実践を する 人は、エホバに 心から よろこばれます。"
          },
          {
             "type": "sort",
-            "badge": "だい7もん",
-            "question": "よい しらせを つたえに いく じゅんばんに ならびかえよう！",
+            "badge": "だい9もん",
+            "question": "かぞくや お友達に やさしい きもちや てがみを つたえる ときの じゅんばんに ならびかえよう！",
             "items": [
-               { "id": "s1", "text": "ドアを トントンと たたく" },
-               { "id": "s2", "text": "「こんにちは」と あいさつする" },
-               { "id": "s3", "text": "よい しらせを はなす" },
-               { "id": "s4", "text": "「ありがとう」と いう" }
+               { "id": "s1", "text": "どんな やさしい ことばにしようか かんがえる" },
+               { "id": "s2", "text": "笑顔で てがみや 絵を かく" },
+               { "id": "s3", "text": "「いつも ありがとう」と 手を そえて わたす" },
+               { "id": "s4", "text": "ふたりで 心が あたたかくなる" }
             ],
             "correctOrder": ["s1", "s2", "s3", "s4"],
-            "explanation": "せいかい！ ていねいに あいさつを して、さいごに おれいを いうと、あいてもうれしいね。"
+            "explanation": "ひびの せいかつの なかで やさしい ことばを つかうことは、イエスの でしとしての りっぱな 歩みです。"
          },
          {
             "type": "slide",
             "badge": "📚 ふくしゅうスライド",
-            "title": "クイズを ふりかえって かんがえよう",
-            "content": "・イエスの でしは、おたがいを あいしあっているよ。\n\n・よい しらせを ひとに つたえているよ。\n\nみゆちゃんは、だれに あいを しめしたい？",
-            "image": "https://placehold.co/600x400?text=L18-slide3"
+            "title": "今日の まなびの まとめ",
+            "content": "・イエスの ほんものの でしは、おたがいを 愛し合っています。\n\n・「神の おうこくの よい しらせ」を よろこんで 人々に つたえています。\n\nエホバと イエスは、いつも あなたの 愛ある こうどうを 見ていてくださいます。",
+            "image": "https://cms-imgp.jw-cdn.org/img/p/502012496/univ/art/502012496_univ_lsr_lg.jpg"
          },
          {
             "type": "puzzle",
             "badge": "🧩 さいごの パズル",
-            "question": "ほんものの クリスチャンが なかよく あつまっている ばめんの パズルを かんせいさせよう！",
-            "imageUrl": "https://placehold.co/600x400?text=L18-puzzle",
-            "explanation": "よくできました！ みゆちゃんも イエスの でしを まねして、みんなと なかよく しようね。"
+            "question": "みんなで 手を つないで えがおで あつまっている たのしそうな パズルを かんせいさせよう！",
+            "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/2014723/univ/art/2014723_univ_lsr_xl.jpg",
+            "explanation": "クイズの クリア、おめでとうございます！ エホバと イエスの だいすきな でしとして、これからも がんばりましょう！"
          }
       ]
    }
