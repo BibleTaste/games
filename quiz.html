@@ -211,10 +211,6 @@
          width: 100%;
       }
 
-      .options-grid.two-cols {
-         grid-template-columns: repeat(2, 1fr);
-      }
-
       .btn-option {
          background: #f8fafc;
          border: 2px solid #cbd5e1;
@@ -566,24 +562,39 @@
       .hidden {
          display: none !important;
       }
-   </style>
+
+      /* ===== リファクタリングで追加 ===== */
+      .home-title { text-align: center; color: var(--primary-color); margin-top: 0; }
+      .slide-image { text-align: center; margin-bottom: 15px; }
+      .slide-image img { max-width: 100%; border-radius: 12px; }
+      .slide-text { white-space: pre-wrap; }
+      .exp-text { line-height: 1.7; white-space: pre-wrap; }
+      .exp-ok { color: #16a34a; }
+      .exp-ng { color: #dc2626; }
+      .btn-option span { white-space: pre-line; } /* データ内の \n を改行として表示 */
+      .hint { margin: 0 0 4px; font-size: 0.85rem; color: #64748b; text-align: center; }
+      .drag-item { touch-action: manipulation; }
+      .drag-item.picked { border-color: #0284c7; background: #e0f2fe; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3); }
+      button:focus-visible, select:focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
+      @media (max-width: 480px) { :root { --cell-size: 42px; } } /* スマホでパズル盤面がはみ出さない */
+
+</style>
 </head>
 
 <body>
-
    <header>
       <h1 id="appTitle">クイズチャレンジ</h1>
    </header>
 
-   <div class="quiz-card">
-      <div id="navBar" class="nav-bar hidden">
-         <button class="nav-btn home-btn" onclick="goHome()">🏠 ホーム</button>
-         <button id="btnPrev" class="nav-btn" onclick="prevQuiz()">◀ まえ</button>
-         <button id="btnNext" class="nav-btn" onclick="nextQuiz()">つぎ ▶</button>
-         <select id="quizSelect" class="quiz-select" onchange="jumpToQuiz(this.value)"></select>
-      </div>
+   <main class="quiz-card">
+      <nav id="navBar" class="nav-bar hidden">
+         <button id="btnHome" class="nav-btn home-btn" type="button">🏠 ホーム</button>
+         <button id="btnPrev" class="nav-btn" type="button">◀ まえ</button>
+         <button id="btnNext" class="nav-btn" type="button">つぎ ▶</button>
+         <select id="quizSelect" class="quiz-select" aria-label="もんだいを えらぶ"></select>
+      </nav>
 
-      <div id="overlay" class="overlay hidden">
+      <div id="overlay" class="overlay hidden" role="status" aria-live="polite">
          <div id="overlayContent"></div>
       </div>
 
@@ -591,11 +602,17 @@
 
       <div id="explanationBox" class="explanation-card hidden">
          <h3 id="expStatus"></h3>
-         <p id="expText" style="line-height: 1.7; white-space: pre-wrap;"></p>
+         <p id="expText" class="exp-text"></p>
       </div>
-   </div>
+   </main>
 
+   <script src="quiz-data.js"></script>
    <script>
+      "use strict";
+
+      /* ==========================================================
+       * 1. 設定（クイズデータは quiz-data.js にあります）
+       * ========================================================== */
       const CONFIG = {
          drumrollDuration: 8000,
          resultDisplayTime: 3000,
@@ -606,972 +623,595 @@
          }
       };
 
-      /* クイズテーマデータ集 */
-      const quizThemes = [
-         {
-            id: "lesson16",
-            title: "イエスは ちじょうで どんなことをした？",
-            description: "「いつまでも しあわせに くらせます」レッスン１６の クイズだよ",
-            image: "https://cms-imgp.jw-cdn.org/img/p/1102021216/J/art/1102021216_J_cnt_01_lg.jpg",
-            questions: [
-               {
-                  "type": "slide",
-                  "badge": "📚 がくしゅうスライド",
-                  "title": "イエス・キリストの ちじょうでの あゆみ",
-                  "content": "イエスは ちじょうに いた とき、かみの おうこくの よい しらせを つたえ、たくさんの びょうきの ひとを なおす きせきを おこないました。\n\nまた、でしたちや こどもたちに しんせつにし、あいの てほんを しめして くれました。\n\nみゆちゃんは イエスが どんな ひとだったか しっている？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/502018118/univ/art/502018118_univ_lsr_lg.jpg"
-               },
-               {
-                  "type": "single",
-                  "badge": "だい1もん",
-                  "question": "イエスは ちじょうで なにを していた？",
-                  "options": [
-                     { "text": "おいしゃさん", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhNqU4HupZ6t7dYlYRKvSPOspXwWrOL1hdKGgow3K_pvlyxqTbZAl73HYC7E8PWfSbnQiwa9MI3LJxZ5wrQnphziufST3OU51VrTHEQnEri9yXwFusorJr9ovogoN9oJUaI0gGnc31AxS3P/s400/medical_nyuin_doctor_man.png" },
-                     { "text": "かみの おうこくの よい しらせを つたえた", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgjGbrorrfIKTJ-GzLP_hd0YElUPSaUxjuoSYW70aEjVsC0MUePluT-RdMt7ED5XKYjc2-u1WCAza_0FPvuNmycAjaWmV1dDwztVrUyDb8hZr5xLJ6Ux82XDbkAV-dXleavQa7azueVNUM2/s800/presentation_setsumei_man.png" },
-                     { "text": "くるまの うんてん", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiHI59-eQIPditx8jvP8zMMyFJoaoPEAHVpKYcmfQTDZS2Nr-wL3ac4JnBkJ1rtj02rexEzolZnWsD8Ap1ybLS4OYdYPB3WNsjjWPHIQiiNmOwiF2diE8eG_pkhYRM5QCG9y43CxQ3028/s400/taxi_driver_untensyu3.png" },
-                     { "text": "さかなを とる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhqgYlZg9hDmCYasDNFhgIM1bqLhnOElLJgFRMUkJGyrmwR9GS6s-Y8yp7ZKslJK65WLVb8C6vQsUyan42vqxJY6WwZvTf6RCZutPNrED2HJ1FsFFmopr7qowjpc9IiN1M2iUjOiJfKMh1C/s800/job_gyogyou_ryoushi.png" }
-                  ],
-                  "answer": "かみの おうこくの よい しらせを つたえた",
-                  "explanation": "イエスは「かみの おうこくに ついての よい しらせ」を つたえる ことを いちばん たいせつに していました。"
-               },
-               {
-                  "type": "single",
-                  "badge": "だい2もん",
-                  "question": "イエスは なにを コントロールする きせきを おこなった？",
-                  "options": [
-                     { "text": "しぜん（かぜや うみ）", "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" },
-                     { "text": "ロケット", "image": "https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=400&q=80" },
-                     { "text": "じどうしゃ", "image": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400&q=80" },
-                     { "text": "スマホ", "image": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=400&q=80" }
-                  ],
-                  "answer": "しぜん（かぜや うみ）",
-                  "explanation": "せいかい！ イエスは つよい かぜや あらい うみも しずめる ことが できました。（マタイ 8:23-27）"
-               },
-               {
-                  "type": "multiple",
-                  "badge": "だい3もん（ふくすう せんたく）",
-                  "question": "イエスの きせきから なにが わからかな？（あてはまるものを えらぼう）",
-                  "options": [
-                     { "text": "イエスは エホバから つかわされた", "image": "https://cms-imgp.jw-cdn.org/img/p/2026523/univ/art/2026523_univ_cnt_1_xl.jpg" },
-                     { "text": "あらしと おはなしできる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWJu0T6R-qnhzx0AF1tf8egPbUuh1m2sxWDI6UpU22ZiydNSQo2_Q3hK3gSW2CoHIfQ0J1GrG0LVBR0Jgt8PUmMZ0Yz76JH-DQFCmwf7c8IAMA5oVnZ2Naex10IQb5Iw15QqeF2dLTt7Gg/s500/arashi.png" },
-                     { "text": "パンは おいしい", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg25JicWql0BeKQwPegUTbApgHtRR7zFFum20Zed1jxKdokrJoMESQ96j2CT5OzhiHi2U5LHSegsDz4CrMT9Y9clPpi7H2I5k7FNuShdg0iCNXWz-LqhccVuFzPTY76gpcU3LHUD5syP5NC/s400/pan_bread_set.png" },
-                     { "text": "エホバが もんだいを かいけつしてくれる", "image": "https://cms-imgp.jw-cdn.org/img/p/2016403/univ/art/2016403_univ_lsr_lg.jpg" }
-                  ],
-                  "answer": [
-                     "イエスは エホバから つかわされた",
-                     "エホバが もんだいを かいけつしてくれる"
-                  ],
-                  "explanation": "イエスが おこなった きせきを しらべると、エホバが にんげんに してあげたい ことが わかるね！"
-               },
-               {
-                  "type": "binary",
-                  "badge": "だい4もん",
-                  "question": "イエスは「かみの おうこくの よい しらせ」を つたえるのを じゃまされたとき、やめちゃった？ ⭕か ❌か？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/2026684/univ/art/2026684_univ_cnt_2_lg.jpg",
-                  "options": ["⭕ ほんとう（○）", "❌ ちがう（✕）"],
-                  "answer": "❌ ちがう（✕）",
-                  "explanation": "せいかいは ❌！ いじわるを されても エホバから いわれた とおりにし、さいごまで やめませんでした。"
-               },
-               {
-                  "type": "bible-first",
-                  "badge": "だい5もん",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_03_lg.jpg",
-                  "bibleText": "「イエスは まちから まちへ，むらから むらへと たびをし，かみの おうこくの よい しらせを ひろめた」（ルカ 1:8）",
-                  "question": "イエスは「かみの おうこくの よい しらせ」を つたえるために なにを した？",
-                  "options": ["たくさん たべた", "たくさん ほんを かいた", "たくさん あるいた", "たくさん ねた"],
-                  "answer": "たくさん あるいた",
-                  "explanation": "せいかい！ イエスは たくさんの ひとに あうために、じぶんから ひとびとの ところへ あるいて いきました。"
-               },
-               {
-                  "type": "classify",
-                  "badge": "だい6もん",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_04_lg.jpg",
-                  "question": "マタイ 6：14，34と7：12をよんで、イエスが「おしえた こと」と「おしえていない こと」に わけてみよう！",
-                  "categories": ["おしえた こと", "おしえていない こと"],
-                  "items": [
-                     { "id": "c1", "text": "ひとを ゆるすなら、じぶんも ゆるしてもらえる", "category": "おしえた こと" },
-                     { "id": "c2", "text": "あしたの ことを しんぱいしない", "category": "おしえた こと" },
-                     { "id": "c3", "text": "ねたい ときに ねればいい にんげんだもの", "category": "おしえていない こと" },
-                     { "id": "c4", "text": "じぶんが してほしい ことは、ひとにも してあげよう", "category": "おしえた こと" }
-                  ],
-                  "explanation": "すごい！ イエスが おしえていた ことは、エホバが みんなに しってほしいと おもっている ことだよ！"
-               },
-               {
-                  "type": "slide",
-                  "badge": "📚 がくしゅうスライド",
-                  "title": "どうがを みて クイズに こたえよう",
-                  "content": "イエスは エホバから ちからを もらって，たくさんの きせきを おこないました。\n\n▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_161_VIDEO' target='_blank' style='color:#0284c7; font-weight:bold;'>【どうが】びょうきの おんなのひとが いやされる</a> を みてみよう！",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/1102021216/univ/art/1102021216_univ_cnt_06_xl.jpg"
-               },
-               {
-                  "type": "single",
-                  "badge": "だい7もん",
-                  "question": "おんなのひとは どんな びょうきだった？",
-                  "options": [
-                     { "text": "はなみずが とまらない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSrSEBBYe37bM-F8BnvZVdnGkoFehVIFY4wiVwteK14Egps1aQR5poIbXfPS2IRloQVNii7RMN3QZ0NpJleFkLYq0AuXBEX8aMP-UR67a-U7ySC2yTJRvlFlrn_KTlL0jNyol6fyP4DWm5/s400/hanadumari_woman.png" },
-                     { "text": "ねむれない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhpklE9mfu57YZ7PyYcppg9XSpqOxyJYxPjLbf5Cj-QdoZ52G4dDeCioArypNUWp3vueXc4EFE3BAvD7DvvfJdsrnn60vQ2-jDWWNv_sKqXvzL_Gas5Na8vfLRuhK5rfV7hLWAAt8pHdjpM/s400/sleep_nemurenai_woman.png" },
-                     { "text": "めが みえない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiY4zV21iho2RLuSwo-_XostdEA77gKzbsrBh_ps__OLZcuD4U99YPd2xHDqyve0HLj9KQ1kyGa_BYGKtSevNjaRCYADzmXCPub_hOu1QQsJLikq-wmjH2ojRIRIcZ-XH5hs-fif7JUZab6/s400/eye_hakunaisyou_ryokunaisyou.png" },
-                     { "text": "ちが とまらない びょうき", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiGvw_TkOV2uIGUSNy8Pj4qAQevyIcd61vjnSJei_s2Vc6Cr0kBGmaAaM85rhu18ZyhG647O9NlpDBlfooGk1wpc0DTlWfjEgl0C1u1riQlfNJAYzUdX29WS0XrgSM7kbs_Pw-IFOIWskZp/s400/medical_ketsueki.png" }
-                  ],
-                  "answer": "ちが とまらない びょうき",
-                  "explanation": "せいかい！ おんなのひとは ながねん「ちが とまらない びょうき」で くるしんでいましたが、イエスに たすけてもらいました。"
-               },
-               {
-                  "type": "sort",
-                  "badge": "だい8もん",
-                  "question": "おんなのひとは どんなことをした？ じゅんばんに ならびかえよう！",
-                  "items": [
-                     { "id": "s1", "text": "イエスを さがした" },
-                     { "id": "s2", "text": "イエスに ちかづいた" },
-                     { "id": "s3", "text": "イエスに さわった" },
-                     { "id": "s4", "text": "イエスに あやまった" }
-                  ],
-                  "correctOrder": ["s1", "s2", "s3", "s4"],
-                  "explanation": "せいかい！ おんなのひとは イエスを さがし、ちかづき、ふくに さわり、さいごに あやまりました。イエスは とても やさしく してくれたね。"
-               },
-               {
-                  "type": "slide",
-                  "badge": "📚 ふくしゅうスライド",
-                  "title": "クイズを ふりかえって かんがえよう",
-                  "content": "・みゆちゃんは イエスの どんなところが すきに なりましたか？\n\nイエスとエホバはどんなところが似ていますか？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/502012496/univ/art/502012496_univ_lsr_lg.jpg"
-               },
-               {
-                  "type": "puzzle",
-                  "badge": "🧩 さいごの パズル",
-                  "question": "イエスが みんなに「かみの おうこくの よい しらせ」を はなしている ばめんの パズルを かんせいさせよう！",
-                  "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/2014723/univ/art/2014723_univ_lsr_xl.jpg",
-                  "explanation": "この ちょうしで せいしょの レッスンを つづけていこうね！"
-               }
-            ]
-         },
-         {
-            id: "lesson17",
-            title: "イエスは どんなひと？",
-            description: "「いつまでも しあわせに くらせます」レッスン１７の クイズだよ",
-            image: "https://cms-imgp.jw-cdn.org/img/p/1102021217/J/art/1102021217_J_cnt_01_lg.jpg",
-            questions: [
-               {
-                  "type": "slide",
-                  "badge": "📚 がくしゅうスライド",
-                  "title": "イエス・キリストの ちじょうでの あゆみ",
-                  "content": "イエスは どんなひと だったかな？\nイエスのことを たくさんしると、もっとイエスとエホバを すきになるよ。\nみゆちゃんは イエスのどんなところを まねしたい？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/2026686/univ/art/2026686_univ_cnt_1_lg.jpg"
-               },
-               {
-                  "type": "single",
-                  "badge": "だい1もん",
-                  "question": "イエスと エホバは どんなところが にている？",
-                  "options": [
-                     { "text": "ひげ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhWj37JLhskKVoCKKK6SHH57nC9D6aiZB12B4LgEGCmmGuYIzkiwFhj7k8afiJIKGeTFZKeb7YzHv9pk2TvxSH4Niee22Fx3xk_DKxg4vs5llKjScTREP1xuUoUrP01IekiK6Etm-sPQNpJ/s400/hige_kirei.png" },
-                     { "text": "おおきさ", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiee3vhacyNMc9ehwDC8C9umyT3EmclyK4_VQgraCNIZD9RVxPkhZC-kn3CeVugZqYmcyWEIG7eJraHwdQbdi6d1MaFlUtdMuDRv4VFm2DlfWmdOp8OmeS-zLXGJGPsCtuP2h3H8AqmOKL8/s400/donguri_seikurabe.png" },
-                     { "text": "かお", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgwfe-2AGbz1RROFZ1Ji84f3GsYlHwce_lK8RAZybwWfLVNknerYhJTpU2ARp35zkO6NoyhSxmEP-4cTV8bgo8huH6gXR7dWco6wFPOWl5O5sdhKt00bpttadBjO-U8TKtmHg3roMsMuzr0/s800/doppelganger.png" },
-                     { "text": "せいかく", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi74alfWuh246QoO4_YSvG_DT0wbFkeRrp4qwgUPtbM-qT4XL6JS1S4lr2N8r2pQ4KqWINXjd2m8MP4RQRYgyGYu2KxcbfBAEqtIVurozvA_xDcx8agjSic3v__afeITqotx4gatmhUJwFs/s300/hyoujou_text_man_nikoniko.png" }
-                  ],
-                  "answer": "せいかく",
-                  "explanation": "イエスと エホバは せいかくが そっくり！ イエスをしると エホバのことを もっとすきになるよ"
-               },
-               {
-                  "type": "multiple",
-                  "badge": "だい2もん",
-                  "question": "イエスが エホバを あいていることは どうしてわかる？（あてはまるものを えらぼう）",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/1102016088/univ/art/1102016088_univ_lsr_lg.jpg",
-                  "options": [
-                     { "text": "エホバに\nいつもしたがった" },
-                     { "text": "エホバのことを\nひとにはなした" },
-                     { "text": "エホバと\nなかよくなれないように\nじゃました" },
-                     { "text": "エホバと\nなかよくなれるように\nひとをたすけた" }
-                  ],
-                  "answer": [
-                     "エホバに\nいつもしたがった",
-                     "エホバのことを\nひとにはなした",
-                     "エホバと\nなかよくなれるように\nひとをたすけた"
-                  ],
-                  "explanation": "イエスは エホバを あいしていたから、エホバの いうことを よくきいたよ。 そして、エホバが すてきなかみだと ひとびとに しらせたよ。"
-               },
-               {
-                  "type": "multiple",
-                  "badge": "だい3もん（ふくすう せんたく）",
-                  "question": "イエスが みゆちゃんのことを あいしていると どうしてわかる？（あてはまるものを ぜんぶえらぼう）",
-                  "options": [
-                     { "text": "みゆちゃんが にんげんだから", "image": "https://cms-imgp.jw-cdn.org/img/p/1102016091/univ/art/1102016091_univ_cnt_2_md.jpg" },
-                     { "text": "イエスが おねがいしたことを みゆちゃんが やっているから", "image": "https://cms-imgp.jw-cdn.org/img/p/1102012151/univ/art/1102012151_univ_cnt_1_xl.jpg" },
-                     { "text": "イエスは みゆちゃんのために 死（し）んだから", "image": "https://cms-imgp.jw-cdn.org/img/p/1102016100/univ/art/1102016100_univ_lsr_lg.jpg" },
-                     { "text": "みゆちゃんが エホバをしるように たすけているから", "image": "https://cms-imgp.jw-cdn.org/img/p/2016403/univ/art/2016403_univ_lsr_lg.jpg" }
-                  ],
-                  "answer": [
-                     "みゆちゃんが にんげんだから",
-                     "イエスが おねがいしたことを みゆちゃんが やっているから",
-                     "イエスは みゆちゃんのために 死（し）んだから",
-                     "みゆちゃんが エホバをしるように たすけているから"
-                  ],
-                  "explanation": "イエスは みゆちゃんのことが ほんとうにだいすきで、たくさんのことをしてくれたよ。イエスについてもっとしろう！"
-               },
-               {
-                  "type": "puzzle",
-                  "badge": "だい４もん 🧩 きゅうけい パズル",
-                  "question": "イエスが パンを あたえている ばめんの パズルを かんせいさせよう！",
-                  "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/1102021217/univ/art/1102021217_univ_cnt_04_xl.jpg",
-                  "explanation": "レッスンをがんばっていこう！あともうちょっとだよ！"
-               },
-               {
-                  "type": "binary",
-                  "badge": "だい５もん",
-                  "question": "まず使徒（しと）20:35をよんでね。イエスは ひとから もらうほうが しあわせと おしえた？ ⭕か ❌か？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/502019175/univ/art/502019175_univ_lsr_lg.jpg",
-                  "options": ["⭕ ほんとう（○）", "❌ ちがう（✕）"],
-                  "answer": "❌ ちがう（✕）",
-                  "explanation": "イエスは おかねや ものを あまりもっていなかったけど、きまえよく ひとに あたえました。"
-               },
-               {
-                  "type": "slide",
-                  "badge": "📚 がくしゅうスライド",
-                  "title": "どうがを みて クイズに こたえよう",
-                  "content": "▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_171_VIDEO'>【どうが】あたえるほうが こうふく</a> を みてみよう！",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/jwbai/201412/univ/art/jwbai_univ_201412_lss_01_lg.jpg"
-               },
-               {
-                  "type": "multiple",
-                  "badge": "だい６もん",
-                  "question": "イエスのように おかねや ものが ないとき、なにを あたえることができる？",
-                  "options": [
-                     { "text": "おてがみをかく", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjvpcHJWc06O2fOJyGvDPJYaEyG_IkSVrFcwdnbTYsG1siEGQi65HQvCnAN39SBawW7NfV785Hke74Xr6wZmph9jV4qxGNwCLoqW6TYeDnWAmhNsqNJ_JnPFXHxF4mSU1Ta47q2ywY7KGA/s400/mail.png" },
-                     { "text": "おてつだいをする", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgQ0H1D8_JnbRVeNfIhXqhMqm73tzwJYb-E5qCIUzIyoyjnkHQt_7wmJxzVtq0eHRnZGiVQpT0YPhna5abdhkfmnVdhI8tFtf378R61IOMW9187K-p6P_Q5ZvrRbqwGflnTzBvCDrurrD8/s500/family_kaji_tetsudai.png" },
-                     { "text": "エホバのことをはなす", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjXkGXZxHE8BWUK_i3-mS0T3CdN1OQkSRVoc5yndasD3c1Xncpbh6jgAf8EJyis3tEcrBnrpsqhK9ne240vpiAigwD1NAU-2o-uFXh-BnFQ0i5zoIw2oq3hyphenhyphen8Qp84OYz7diDw2PBpZYqI4d/s400/family_smartphone_game.png" },
-                     { "text": "えをかいてあげる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgkkPWu6zRmA3imW4bJ2Dzs3cNBDXumZrikakhGS9YK0-r_D6cFhq0s2oTb0eGNexDku5KXcNSynoJz0vuC0Cg_4-GnoK0pe_XOx3aZmYkD6jGfYwrzrFRBVs-6esgrxYKbRiNByuXCzok/s400/father_nigaoe.png" }
-                  ],
-                  "answer": [
-                     "おてがみをかく",
-                     "おてつだいをする",
-                     "エホバのことをはなす",
-                     "えをかく"
-                  ],
-                  "explanation": "こたえは ぜんぶ！みゆちゃんは つぎのしゅうかいで だれに なにを あげたい？"
-               },
-               {
-                  "type": "classify",
-                  "badge": "だい７もん",
-                  "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNJvVyAr3J4_KxRLPOWewnU6AztHGMAGbk8ZytvKhQADnWU8YXo8bj-GOb8nl8fdORzYjxs7kQ74kHlC_cNskMzfjopnpDtKEj19Qb0w5lgTwOtJW4suFdPe8ErxBVDgp1s-L7oxfIVchB/s450/saigai_mochidashi_bag_kakunin.png",
-                  "question": "みゆちゃんが もっているものと もっていないものを かんがえよう！",
-                  "categories": ["もっている", "もっていない"],
-                  "items": [
-                     { "id": "c1", "text": "シール", "category": "もっている" },
-                     { "id": "c2", "text": "えんぴつ", "category": "もっている" },
-                     { "id": "c3", "text": "パズル", "category": "もっている" },
-                     { "id": "c4", "text": "おかね", "category": "もっていない" },
-                     { "id": "c5", "text": "おてがみ", "category": "もっている" },
-                     { "id": "c6", "text": "おにんぎょう", "category": "もっている" },
-                     { "id": "c6", "text": "エホバのちしき", "category": "もっている" }
-                  ],
-                  "explanation": "みゆちゃんは なにを だれに あたえたいとおもう？ほかにも あたえられるものは ある？"
-               },
-               {
-                  "type": "slide",
-                  "badge": "📚 ふくしゅうスライド",
-                  "title": "クイズを ふりかえって かんがえよう",
-                  "content": "・イエスは エホバを あいしていて、ひとも あいしているよ。\n\n・イエスの どんなところが すき？",
-                  "image": "https://cms-imgp.jw-cdn.org/img/p/502012496/univ/art/502012496_univ_lsr_lg.jpg"
-               }
-            ]
+
+      /* ==========================================================
+       * 3. ユーティリティ
+       * ========================================================== */
+      const PUZZLE = { rows: 4, cols: 6 };
+      const $ = id => document.getElementById(id);
+
+      /** 要素を作る小さなヘルパー */
+      function h(tag, className = "", props = {}) {
+         const node = document.createElement(tag);
+         if (className) node.className = className;
+         return Object.assign(node, props);
+      }
+
+      /** Fisher-Yates シャッフル（sort(random) より偏りが少ない） */
+      function shuffle(arr) {
+         const a = [...arr];
+         for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
          }
-      ];
+         return a;
+      }
 
-      /* 状態管理変数 */
-      let currentThemeIdx = null; // null の時はホーム画面
-      let currentQuestionIdx = 0;
-      let audioObjects = {};
-      let isAudioUnlocked = false;
+      const sameSet = (a, b) => a.length === b.length && a.every(v => b.includes(v));
+      const normalizeOption = o => (typeof o === "object" ? o : { text: o });
 
-      const BOARD_ROWS = 4;
-      const BOARD_COLS = 6;
-      let boardState = Array.from({ length: BOARD_ROWS }, () => Array(BOARD_COLS).fill(null));
+      /* ==========================================================
+       * 4. 状態
+       * ========================================================== */
+      const state = { themeIdx: null, qIdx: 0, timers: [], locked: false };
+      const currentTheme = () => quizThemes[state.themeIdx];
+      const currentItem = () => currentTheme().questions[state.qIdx];
 
-      window.onload = () => {
-         audioObjects.drumroll = new Audio(CONFIG.sounds.drumroll);
-         audioObjects.correct = new Audio(CONFIG.sounds.correct);
-         audioObjects.wrong = new Audio(CONFIG.sounds.wrong);
+      /* ==========================================================
+       * 5. 音
+       * ========================================================== */
+      const audio = {};
+      let audioUnlocked = false;
 
-         goHome();
-      };
+      function initAudio() {
+         for (const [name, url] of Object.entries(CONFIG.sounds)) {
+            audio[name] = new Audio(url);
+            audio[name].preload = "auto";
+         }
+      }
 
-      /* iPad等のブラウザで自動再生制限を解除(アンロック)する関数 */
+      /** iPad等の自動再生制限の解除（無音で一度再生） */
       function unlockAudio() {
-         if (isAudioUnlocked) return;
-         Object.values(audioObjects).forEach(audio => {
-            audio.play().then(() => {
-               audio.pause();
-               audio.currentTime = 0;
-            }).catch(() => { });
+         if (audioUnlocked) return;
+         audioUnlocked = true;
+         Object.values(audio).forEach(a => {
+            a.muted = true;
+            a.play()
+               .then(() => { a.pause(); a.currentTime = 0; })
+               .catch(() => { })
+               .finally(() => { a.muted = false; });
          });
-         isAudioUnlocked = true;
       }
 
-      /* 安全な再生処理 */
-      function playAudio(type) {
-         unlockAudio();
-         const audio = audioObjects[type];
-         if (audio) {
-            audio.currentTime = 0;
-            audio.play().catch(e => console.log("Audio play blocked:", e));
-         }
+      function playSound(name) {
+         const a = audio[name];
+         if (!a) return;
+         a.currentTime = 0;
+         a.play().catch(() => { });
       }
 
-      function stopAudio(type) {
-         const audio = audioObjects[type];
-         if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-         }
+      function stopSound(name) {
+         const a = audio[name];
+         if (!a) return;
+         a.pause();
+         a.currentTime = 0;
       }
 
-      /* 正誤判定・演出表示 */
+      /* ==========================================================
+       * 6. 正誤判定・演出
+       * ========================================================== */
+      const later = (ms, fn) => state.timers.push(setTimeout(fn, ms));
+
+      /** 演出中のタイマー・音・オーバーレイを全部止める（画面移動時に呼ぶ） */
+      function cancelAnswer() {
+         state.timers.forEach(clearTimeout);
+         state.timers = [];
+         state.locked = false;
+         Object.keys(audio).forEach(stopSound);
+         $("overlay").classList.add("hidden");
+      }
+
       function checkAnswer(isCorrect) {
-         unlockAudio();
-         const overlay = document.getElementById("overlay");
-         const overlayContent = document.getElementById("overlayContent");
-         overlay.classList.remove("hidden");
+         if (state.locked) return;
+         state.locked = true;
 
-         overlayContent.innerHTML = `<div class="drumroll-text">こたえは...</div>`;
-         playAudio('drumroll');
+         const box = $("overlayContent");
+         $("overlay").classList.remove("hidden");
+         box.innerHTML = `<div class="drumroll-text">こたえは...</div>`;
+         playSound("drumroll");
 
-         setTimeout(() => {
-            stopAudio('drumroll');
-            if (isCorrect) {
-               playAudio('correct');
-               overlayContent.innerHTML = `<div class="result-mark mark-correct">⭕ せいかい！</div>`;
-            } else {
-               playAudio('wrong');
-               overlayContent.innerHTML = `<div class="result-mark mark-wrong">❌ ざんねん！</div>`;
-            }
+         later(CONFIG.drumrollDuration, () => {
+            stopSound("drumroll");
+            playSound(isCorrect ? "correct" : "wrong");
+            box.innerHTML = isCorrect
+               ? `<div class="result-mark mark-correct">⭕ せいかい！</div>`
+               : `<div class="result-mark mark-wrong">❌ ざんねん！</div>`;
 
-            setTimeout(() => {
-               overlay.classList.add("hidden");
+            later(CONFIG.resultDisplayTime, () => {
+               $("overlay").classList.add("hidden");
+               state.locked = false; // 解説後はもう一度挑戦できる
                showExplanation(isCorrect);
-            }, CONFIG.resultDisplayTime);
-
-         }, CONFIG.drumrollDuration);
+            });
+         });
       }
 
       function showExplanation(isCorrect) {
-         const expBox = document.getElementById("explanationBox");
-         const expStatus = document.getElementById("expStatus");
-         const expText = document.getElementById("expText");
-
-         const item = quizThemes[currentThemeIdx].questions[currentQuestionIdx];
-
-         expStatus.innerText = isCorrect ? "🎉 せいかい！" : "🤔 おしい！";
-         expStatus.style.color = isCorrect ? "#16a34a" : "#dc2626";
-         expText.innerText = item.explanation || "";
-
-         expBox.classList.remove("hidden");
+         const status = $("expStatus");
+         status.textContent = isCorrect ? "🎉 せいかい！" : "🤔 おしい！";
+         status.className = isCorrect ? "exp-ok" : "exp-ng";
+         $("expText").textContent = currentItem().explanation || "";
+         $("explanationBox").classList.remove("hidden");
       }
 
-      /* ホーム画面を表示 */
+      /* ==========================================================
+       * 7. 画面遷移（ホーム / ナビゲーション）
+       * ========================================================== */
       function goHome() {
-         currentThemeIdx = null;
-         currentQuestionIdx = 0;
+         cancelAnswer();
+         state.themeIdx = null;
+         state.qIdx = 0;
+         $("appTitle").textContent = "クイズチャレンジ";
+         $("navBar").classList.add("hidden");
+         $("explanationBox").classList.add("hidden");
 
-         document.getElementById("appTitle").innerText = "クイズチャレンジ";
-         document.getElementById("navBar").classList.add("hidden");
-         document.getElementById("explanationBox").classList.add("hidden");
+         const container = $("quizContent");
+         container.innerHTML = "";
+         container.append(h("h2", "home-title", { textContent: "あそぶ クイズを えらんでね！" }));
 
-         const container = document.getElementById("quizContent");
-         container.innerHTML = `
-            <h2 style="text-align:center; color: var(--primary-color); margin-top:0;">あそぶ クイズを えらんでね！</h2>
-            <div class="home-grid" id="homeGrid"></div>
-         `;
-
-         const grid = document.getElementById("homeGrid");
+         const grid = h("div", "home-grid");
          quizThemes.forEach((theme, idx) => {
-            const card = document.createElement("div");
-            card.className = "theme-card";
-            card.onclick = () => startTheme(idx);
-
+            const card = h("div", "theme-card", { onclick: () => startTheme(idx) });
             card.innerHTML = `
                <div>
-                  ${theme.image ? `<img src="${theme.image}" alt="${theme.title}">` : ''}
+                  ${theme.image ? `<img src="${theme.image}" alt="" loading="lazy">` : ""}
                   <div class="theme-title">${theme.title}</div>
-                  <div class="theme-desc">${theme.description || ''}</div>
+                  <div class="theme-desc">${theme.description || ""}</div>
                </div>
-               <button class="btn-start-theme">はじめる！</button>
-            `;
-            grid.appendChild(card);
+               <button class="btn-start-theme" type="button">はじめる！</button>`;
+            grid.append(card);
          });
+         container.append(grid);
       }
 
-      /* テーマを選択してクイズを開始 */
-      function startTheme(themeIdx) {
+      function startTheme(idx) {
          unlockAudio();
-         currentThemeIdx = themeIdx;
-         currentQuestionIdx = 0;
-
-         const currentTheme = quizThemes[currentThemeIdx];
-         document.getElementById("appTitle").innerText = currentTheme.title;
-         document.getElementById("navBar").classList.remove("hidden");
-
-         rebuildSelectOptions();
+         state.themeIdx = idx;
+         state.qIdx = 0;
+         $("appTitle").textContent = currentTheme().title;
+         $("navBar").classList.remove("hidden");
+         buildQuizSelect();
          renderQuiz();
       }
 
-      function rebuildSelectOptions() {
-         const select = document.getElementById("quizSelect");
+      function buildQuizSelect() {
+         const select = $("quizSelect");
          select.innerHTML = "";
-         let qNum = 1;
-
-         const questions = quizThemes[currentThemeIdx].questions;
-         questions.forEach((data, idx) => {
-            const opt = document.createElement("option");
-            opt.value = idx;
-            if (data.type === "slide") {
-               opt.innerText = `📚 ${data.title}`;
+         let qNum = 0;
+         currentTheme().questions.forEach((q, idx) => {
+            let label;
+            if (q.type === "slide") {
+               label = `📚 ${q.title}`;
             } else {
-               opt.innerText = `Q${qNum}. ${data.question ? data.question.substring(0, 10) : ''}...`;
                qNum++;
+               const text = q.question || "";
+               label = `Q${qNum}. ${text.length > 10 ? text.slice(0, 10) + "..." : text}`;
             }
-            select.appendChild(opt);
+            select.append(h("option", "", { value: idx, textContent: label }));
          });
+      }
+
+      function goTo(idx) {
+         const last = currentTheme().questions.length - 1;
+         if (idx < 0 || idx > last) return;
+         cancelAnswer();
+         state.qIdx = idx;
+         renderQuiz();
       }
 
       function updateNav() {
-         const questions = quizThemes[currentThemeIdx].questions;
-         document.getElementById("btnPrev").disabled = (currentQuestionIdx === 0);
-         document.getElementById("btnNext").disabled = (currentQuestionIdx === questions.length - 1);
-         document.getElementById("quizSelect").value = currentQuestionIdx;
+         const last = currentTheme().questions.length - 1;
+         $("btnPrev").disabled = state.qIdx === 0;
+         $("btnNext").disabled = state.qIdx === last;
+         $("quizSelect").value = state.qIdx;
       }
 
-      function prevQuiz() {
-         if (currentQuestionIdx > 0) {
-            currentQuestionIdx--;
-            renderQuiz();
-         }
-      }
-
-      function nextQuiz() {
-         const questions = quizThemes[currentThemeIdx].questions;
-         if (currentQuestionIdx < questions.length - 1) {
-            currentQuestionIdx++;
-            renderQuiz();
-         }
-      }
-
-      function jumpToQuiz(idx) {
-         currentQuestionIdx = parseInt(idx);
-         renderQuiz();
-      }
+      /* ==========================================================
+       * 8. 問題の描画（タイプ別）
+       * ========================================================== */
+      const RENDERERS = {
+         single: renderChoice,
+         binary: renderChoice,
+         "bible-first": renderChoice,
+         multiple: renderMultiple,
+         classify: renderClassify,
+         sort: renderSort,
+         puzzle: renderPuzzle
+      };
 
       function renderQuiz() {
          updateNav();
-         document.getElementById("explanationBox").classList.add("hidden");
-         const container = document.getElementById("quizContent");
+         $("explanationBox").classList.add("hidden");
+         const container = $("quizContent");
          container.innerHTML = "";
+         const item = currentItem();
 
-         const item = quizThemes[currentThemeIdx].questions[currentQuestionIdx];
+         if (item.badge) container.append(h("span", "question-badge", { textContent: item.badge }));
 
-         if (item.badge) {
-            const badge = document.createElement("span");
-            badge.className = "question-badge";
-            badge.innerText = item.badge;
-            container.appendChild(badge);
-         }
-
-         if (item.type === "slide") {
-            container.innerHTML += `
-               <div class="slide-card">
-                  <h2>${item.title}</h2>
-                  ${item.image ? `<div style="text-align:center;margin-bottom:15px;"><img src="${item.image}" style="max-width:100%;border-radius:12px;"></div>` : ''}
-                  <p style="white-space:pre-wrap;">${item.content}</p>
-                  <button class="submit-btn" onclick="nextQuiz()">つぎへ▶</button>
-               </div>`;
-            return;
-         }
+         if (item.type === "slide") return renderSlide(container, item);
 
          if (item.image) {
-            const imgBox = document.createElement("div");
-            imgBox.className = "question-image";
-            imgBox.innerHTML = `<img src="${item.image}">`;
-            container.appendChild(imgBox);
+            const box = h("div", "question-image");
+            box.append(h("img", "", { src: item.image, alt: "" }));
+            container.append(box);
          }
-
-         if (item.type === "bible-first" && item.bibleText) {
-            const bBox = document.createElement("div");
-            bBox.className = "bible-read-box";
-            bBox.innerHTML = `<strong>📖 まず 聖句（せいく）を 読もう！</strong><br>${item.bibleText}`;
-            container.appendChild(bBox);
+         if (item.bibleText) {
+            const box = h("div", "bible-read-box");
+            box.innerHTML = `<strong>📖 まず 聖句（せいく）を 読もう！</strong><br>${item.bibleText}`;
+            container.append(box);
          }
+         container.append(h("h2", "question-title", { textContent: item.question }));
 
-         const title = document.createElement("h2");
-         title.className = "question-title";
-         title.innerText = item.question;
-         container.appendChild(title);
-
-         if (["single", "binary", "fill-in", "bible-first"].includes(item.type)) {
-            const grid = document.createElement("div");
-            grid.className = "options-grid" + (item.type === "binary" ? " two-cols" : "");
-
-            item.options.forEach(opt => {
-               const text = typeof opt === "object" ? opt.text : opt;
-               const img = typeof opt === "object" && opt.image ? `<img src="${opt.image}">` : '';
-
-               const btn = document.createElement("button");
-               btn.className = "btn-option";
-               btn.innerHTML = `${img}<span>${text}</span>`;
-               btn.onclick = () => checkAnswer(text === item.answer);
-               grid.appendChild(btn);
-            });
-            container.appendChild(grid);
-         }
-         else if (item.type === "multiple") {
-            const grid = document.createElement("div");
-            grid.className = "options-grid";
-            const selectedValues = new Set();
-
-            item.options.forEach(opt => {
-               const text = typeof opt === "object" ? opt.text : opt;
-               const img = typeof opt === "object" && opt.image ? `<img src="${opt.image}">` : '';
-
-               const btn = document.createElement("button");
-               btn.className = "btn-option";
-               btn.innerHTML = `${img}<span>${text}</span>`;
-
-               btn.onclick = () => {
-                  if (selectedValues.has(text)) {
-                     selectedValues.delete(text);
-                     btn.classList.remove("selected");
-                  } else {
-                     selectedValues.add(text);
-                     btn.classList.add("selected");
-                  }
-               };
-               grid.appendChild(btn);
-            });
-            container.appendChild(grid);
-
-            const subBtn = document.createElement("button");
-            subBtn.className = "submit-btn";
-            subBtn.innerText = "答えあわせ！";
-            subBtn.onclick = () => {
-               const correctAnswers = Array.isArray(item.answer) ? item.answer : [item.answer];
-               const userSelected = Array.from(selectedValues);
-
-               const isCorrect = correctAnswers.length === userSelected.length &&
-                  correctAnswers.every(val => userSelected.includes(val));
-
-               checkAnswer(isCorrect);
-            };
-            container.appendChild(subBtn);
-         }
-         else if (item.type === "classify") {
-            const classDiv = document.createElement("div");
-            classDiv.className = "classify-container";
-
-            const pool = document.createElement("div");
-            pool.className = "drag-items-pool";
-            pool.ondragover = e => e.preventDefault();
-            pool.ondrop = e => { e.preventDefault(); const id = e.dataTransfer.getData("text"); pool.appendChild(document.getElementById(id)); };
-
-            [...item.items].sort(() => Math.random() - 0.5).forEach(it => {
-               const el = document.createElement("div");
-               el.className = "drag-item";
-               el.draggable = true;
-               el.id = it.id;
-               el.dataset.category = it.category;
-               el.innerText = it.text;
-               el.ondragstart = e => e.dataTransfer.setData("text", it.id);
-               pool.appendChild(el);
-            });
-
-            const catGrid = document.createElement("div");
-            catGrid.className = "drop-categories";
-
-            item.categories.forEach(cat => {
-               const zone = document.createElement("div");
-               zone.className = "drop-zone";
-               zone.dataset.category = cat;
-               zone.innerHTML = `<h4>${cat}</h4>`;
-               zone.ondragover = e => e.preventDefault();
-               zone.ondrop = e => {
-                  e.preventDefault();
-                  const id = e.dataTransfer.getData("text");
-                  zone.appendChild(document.getElementById(id));
-               };
-               catGrid.appendChild(zone);
-            });
-
-            classDiv.appendChild(pool);
-            classDiv.appendChild(catGrid);
-            container.appendChild(classDiv);
-
-            const subBtn = document.createElement("button");
-            subBtn.className = "submit-btn";
-            subBtn.innerText = "チェック！";
-            subBtn.onclick = () => {
-               let isCorrect = pool.children.length === 0;
-               document.querySelectorAll(".drop-zone").forEach(z => {
-                  const targetCat = z.dataset.category;
-                  z.querySelectorAll(".drag-item").forEach(i => {
-                     if (i.dataset.category !== targetCat) isCorrect = false;
-                  });
-               });
-               checkAnswer(isCorrect);
-            };
-            container.appendChild(subBtn);
-         }
-         else if (item.type === "sort") {
-            renderSortQuiz(container, item);
-         }
-         else if (item.type === "puzzle") {
-            render4x6Puzzle(container, item.imageUrl);
-         }
+         const render = RENDERERS[item.type];
+         if (render) render(container, item);
+         else container.append(h("p", "", { textContent: `未対応の問題タイプです: ${item.type}` }));
       }
 
-      /* 並び替えクイズのUI＆操作 */
-      function renderSortQuiz(container, item) {
-         const sortList = document.createElement("div");
-         sortList.className = "sort-list";
+      function addSubmit(container, label, onClick) {
+         container.append(h("button", "submit-btn", { type: "button", textContent: label, onclick: onClick }));
+      }
 
-         const shuffled = [...item.items].sort(() => Math.random() - 0.5);
+      function optionButton(opt) {
+         const btn = h("button", "btn-option", { type: "button" });
+         if (opt.image) btn.append(h("img", "", { src: opt.image, alt: "", loading: "lazy" }));
+         btn.append(h("span", "", { textContent: opt.text }));
+         return btn;
+      }
 
-         shuffled.forEach(it => {
-            const el = document.createElement("div");
-            el.className = "sort-item";
-            el.id = it.id;
+      /* --- slide --- */
+      function renderSlide(container, item) {
+         const isLast = state.qIdx === currentTheme().questions.length - 1;
+         const card = h("div", "slide-card");
+         card.append(h("h2", "", { textContent: item.title }));
+         if (item.image) {
+            const box = h("div", "slide-image");
+            box.append(h("img", "", { src: item.image, alt: "" }));
+            card.append(box);
+         }
+         const p = h("p", "slide-text");
+         p.innerHTML = item.content; // リンク(<a>)を含むため HTML のまま（データは自作のみ）
+         card.append(p);
+         addSubmit(card, isLast ? "ホームへ もどる" : "つぎへ▶", isLast ? goHome : () => goTo(state.qIdx + 1));
+         container.append(card);
+      }
 
-            el.innerHTML = `
+      /* --- single / binary / bible-first --- */
+      function renderChoice(container, item) {
+         const grid = h("div", "options-grid");
+         item.options.map(normalizeOption).forEach(opt => {
+            const btn = optionButton(opt);
+            btn.onclick = () => checkAnswer(opt.text === item.answer);
+            grid.append(btn);
+         });
+         container.append(grid);
+      }
+
+      /* --- multiple --- */
+      function renderMultiple(container, item) {
+         const grid = h("div", "options-grid");
+         const selected = new Set();
+         item.options.map(normalizeOption).forEach(opt => {
+            const btn = optionButton(opt);
+            btn.onclick = () => {
+               selected.has(opt.text) ? selected.delete(opt.text) : selected.add(opt.text);
+               btn.classList.toggle("selected", selected.has(opt.text));
+            };
+            grid.append(btn);
+         });
+         container.append(grid);
+
+         addSubmit(container, "答えあわせ！", () => {
+            const correct = Array.isArray(item.answer) ? item.answer : [item.answer];
+            checkAnswer(sameSet(correct, [...selected]));
+         });
+      }
+
+      /* --- classify（ドラッグ＆ドロップ + タップでも移動可） --- */
+      function renderClassify(container, item) {
+         let dragged = null; // ドラッグ中の要素
+         let picked = null;  // タップで選択中の要素（タッチ端末向け）
+
+         const pool = h("div", "drag-items-pool");
+         const zones = item.categories.map(cat => {
+            const zone = h("div", "drop-zone");
+            zone.dataset.category = cat;
+            zone.append(h("h4", "", { textContent: cat }));
+            return zone;
+         });
+
+         const unpick = () => { picked?.classList.remove("picked"); picked = null; };
+
+         const cards = shuffle(item.items).map(it => {
+            const card = h("div", "drag-item", { textContent: it.text, draggable: true });
+            card.dataset.category = it.category;
+            card.ondragstart = e => { dragged = card; e.dataTransfer.setData("text", it.id); };
+            card.onclick = e => {
+               e.stopPropagation();
+               const same = picked === card;
+               unpick();
+               if (!same) { picked = card; card.classList.add("picked"); }
+            };
+            return card;
+         });
+         pool.append(...cards);
+
+         [pool, ...zones].forEach(target => {
+            target.ondragover = e => e.preventDefault();
+            target.ondrop = e => { e.preventDefault(); if (dragged) target.append(dragged); };
+            target.onclick = () => { if (picked) { target.append(picked); unpick(); } };
+         });
+
+         container.append(h("p", "hint", { textContent: "ドラッグ、または ことばを タップ → はこを タップで うごかせるよ" }));
+         const wrap = h("div", "classify-container");
+         const catGrid = h("div", "drop-categories");
+         catGrid.append(...zones);
+         wrap.append(pool, catGrid);
+         container.append(wrap);
+
+         addSubmit(container, "チェック！", () => {
+            const allPlaced = pool.children.length === 0;
+            const allRight = zones.every(z =>
+               [...z.querySelectorAll(".drag-item")].every(i => i.dataset.category === z.dataset.category));
+            checkAnswer(allPlaced && allRight);
+         });
+      }
+
+      /* --- sort --- */
+      function renderSort(container, item) {
+         const list = h("div", "sort-list");
+         const renumber = () => [...list.children].forEach((row, i) => {
+            row.querySelector(".sort-num").textContent = i + 1;
+         });
+         const isSolved = arr => arr.every((it, i) => it.id === item.correctOrder[i]);
+
+         // 最初から正解の並びにならないようにする
+         let order = shuffle(item.items);
+         while (order.length > 1 && isSolved(order)) order = shuffle(item.items);
+
+         order.forEach(it => {
+            const row = h("div", "sort-item");
+            row.dataset.id = it.id;
+            row.innerHTML = `
                <span class="sort-handle">☰</span>
                <span class="sort-num"></span>
-               <span class="sort-text">${it.text}</span>
+               <span class="sort-text"></span>
                <div class="sort-controls">
-                  <button type="button" class="btn-sort-move btn-up">▲ うえへ</button>
-                  <button type="button" class="btn-sort-move btn-down">▼ したへ</button>
-               </div>
-            `;
+                  <button type="button" class="btn-sort-move" data-dir="-1">▲ うえへ</button>
+                  <button type="button" class="btn-sort-move" data-dir="1">▼ したへ</button>
+               </div>`;
+            row.querySelector(".sort-text").textContent = it.text;
 
-            el.querySelector(".btn-up").onclick = (e) => {
-               e.stopPropagation();
-               const prev = el.previousElementSibling;
-               if (prev) {
-                  sortList.insertBefore(el, prev);
-                  updateSortNumbers(sortList);
-               }
-            };
+            row.querySelectorAll(".btn-sort-move").forEach(btn => {
+               btn.onclick = e => {
+                  e.stopPropagation();
+                  const up = btn.dataset.dir === "-1";
+                  const sibling = up ? row.previousElementSibling : row.nextElementSibling;
+                  if (!sibling) return;
+                  list.insertBefore(up ? row : sibling, up ? sibling : row);
+                  renumber();
+               };
+            });
 
-            el.querySelector(".btn-down").onclick = (e) => {
-               e.stopPropagation();
-               const next = el.nextElementSibling;
-               if (next) {
-                  sortList.insertBefore(next, el);
-                  updateSortNumbers(sortList);
-               }
-            };
-
-            initSortItemDrag(el, sortList);
-            sortList.appendChild(el);
+            attachSortDrag(row, list, renumber);
+            list.append(row);
          });
 
-         container.appendChild(sortList);
-         updateSortNumbers(sortList);
+         container.append(list);
+         renumber();
 
-         const subBtn = document.createElement("button");
-         subBtn.className = "submit-btn";
-         subBtn.innerText = "じゅんばんをチェック！";
-         subBtn.onclick = () => {
-            const currentOrder = Array.from(sortList.children).map(c => c.id);
-            const isCorrect = JSON.stringify(currentOrder) === JSON.stringify(item.correctOrder);
-            checkAnswer(isCorrect);
-         };
-         container.appendChild(subBtn);
-      }
-
-      function updateSortNumbers(sortList) {
-         Array.from(sortList.children).forEach((child, idx) => {
-            const numEl = child.querySelector(".sort-num");
-            if (numEl) numEl.innerText = idx + 1;
+         addSubmit(container, "じゅんばんをチェック！", () => {
+            const current = [...list.children].map(r => r.dataset.id);
+            checkAnswer(current.length === item.correctOrder.length &&
+               current.every((id, i) => id === item.correctOrder[i]));
          });
       }
 
-      function initSortItemDrag(el, sortList) {
-         let isDragging = false;
+      function attachSortDrag(row, list, renumber) {
+         let dragging = false;
 
-         el.addEventListener("pointerdown", (e) => {
+         row.addEventListener("pointerdown", e => {
             if (e.target.closest(".btn-sort-move")) return;
-            isDragging = true;
-            el.classList.add("dragging");
-            el.setPointerCapture(e.pointerId);
+            dragging = true;
+            row.classList.add("dragging");
+            row.setPointerCapture(e.pointerId);
          });
 
-         el.addEventListener("pointermove", (e) => {
-            if (!isDragging) return;
-            const currentY = e.clientY;
-            const siblings = Array.from(sortList.children).filter(c => c !== el);
-
-            let nextSibling = siblings.find(sibling => {
-               const box = sibling.getBoundingClientRect();
-               return currentY < box.top + box.height / 2;
-            });
-
-            if (nextSibling) sortList.insertBefore(el, nextSibling);
-            else sortList.appendChild(el);
-            updateSortNumbers(sortList);
+         row.addEventListener("pointermove", e => {
+            if (!dragging) return;
+            const next = [...list.children]
+               .filter(c => c !== row)
+               .find(c => {
+                  const box = c.getBoundingClientRect();
+                  return e.clientY < box.top + box.height / 2;
+               });
+            list.insertBefore(row, next || null);
+            renumber();
          });
 
-         const stopDrag = (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            el.classList.remove("dragging");
-            try { el.releasePointerCapture(e.pointerId); } catch (err) { }
+         const stop = e => {
+            if (!dragging) return;
+            dragging = false;
+            row.classList.remove("dragging");
+            try { row.releasePointerCapture(e.pointerId); } catch { }
          };
-
-         el.addEventListener("pointerup", stopDrag);
-         el.addEventListener("pointercancel", stopDrag);
+         row.addEventListener("pointerup", stop);
+         row.addEventListener("pointercancel", stop);
       }
 
-      /* パズルクイズ処理 */
-      function render4x6Puzzle(container, imageUrl) {
-         boardState = Array.from({ length: BOARD_ROWS }, () => Array(BOARD_COLS).fill(null));
+      /* --- puzzle --- */
+      function renderPuzzle(container, item) {
+         const { rows, cols } = PUZZLE;
+         const cell = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--cell-size"), 10) || 55;
+         const grid = Array.from({ length: rows }, () => Array(cols).fill(null)); // 盤面の占有状況
+         const pieces = [];
 
-         const mainWrap = document.createElement("div");
-         mainWrap.className = "puzzle-board-container";
+         const wrap = h("div", "puzzle-board-container");
+         const board = h("div", "puzzle-board-4x6");
+         const pool = h("div", "puzzle-mino-pool");
+         for (let i = 0; i < rows * cols; i++) board.append(h("div", "puzzle-cell"));
+         wrap.append(board, pool);
+         container.append(wrap);
 
-         const board = document.createElement("div");
-         board.className = "puzzle-board-4x6";
-         board.id = "puzzleBoard";
-
-         for (let r = 0; r < BOARD_ROWS; r++) {
-            for (let c = 0; c < BOARD_COLS; c++) {
-               const cell = document.createElement("div");
-               cell.className = "puzzle-cell";
-               cell.dataset.r = r;
-               cell.dataset.c = c;
-               board.appendChild(cell);
-            }
-         }
-
-         const pool = document.createElement("div");
-         pool.className = "puzzle-mino-pool";
-         pool.id = "minoPool";
-
-         mainWrap.appendChild(board);
-         mainWrap.appendChild(pool);
-         container.appendChild(mainWrap);
-
-         const img = new Image();
-         img.crossOrigin = "anonymous";
-         img.src = imageUrl;
-         img.onload = () => {
-            const minos = generatePolyominos(BOARD_ROWS, BOARD_COLS);
-            minos.forEach((mino, minoIdx) => {
-               const minoEl = document.createElement("div");
-               minoEl.className = "mino-piece";
-               minoEl.id = `mino_${minoIdx}`;
-
-               let minR = BOARD_ROWS, maxR = -1, minC = BOARD_COLS, maxC = -1;
-               mino.blocks.forEach(b => {
-                  if (b.r < minR) minR = b.r;
-                  if (b.r > maxR) maxR = b.r;
-                  if (b.c < minC) minC = b.c;
-                  if (b.c > maxC) maxC = b.c;
-               });
-
-               const cellSize = 55;
-               const wCols = maxC - minC + 1;
-               const hRows = maxR - minR + 1;
-
-               minoEl.style.width = `${wCols * cellSize}px`;
-               minoEl.style.height = `${hRows * cellSize}px`;
-               minoEl.dataset.originR = minR;
-               minoEl.dataset.originC = minC;
-               minoEl.dataset.wCols = wCols;
-               minoEl.dataset.hRows = hRows;
-
-               const shape = mino.blocks.map(b => ({ relR: b.r - minR, relC: b.c - minC }));
-               minoEl.dataset.shape = JSON.stringify(shape);
-
-               mino.blocks.forEach(b => {
-                  const bEl = document.createElement("div");
-                  bEl.className = "mino-block";
-                  const relR = b.r - minR;
-                  const relC = b.c - minC;
-                  bEl.style.left = `${relC * cellSize}px`;
-                  bEl.style.top = `${relR * cellSize}px`;
-                  bEl.style.backgroundImage = `url(${imageUrl})`;
-                  bEl.style.backgroundSize = `${BOARD_COLS * cellSize}px ${BOARD_ROWS * cellSize}px`;
-                  bEl.style.backgroundPosition = `-${b.c * cellSize}px -${b.r * cellSize}px`;
-                  minoEl.appendChild(bEl);
-               });
-
-               initPointerDrag(minoEl, board, pool, cellSize);
-               pool.appendChild(minoEl);
+         const loader = new Image();
+         loader.onerror = () => { pool.textContent = "がぞうを よみこめなかったよ…"; };
+         loader.onload = () => {
+            generatePolyominos(rows, cols).forEach(blocks => {
+               const piece = buildPiece(blocks, item.imageUrl, rows, cols, cell);
+               pieces.push(piece);
+               attachPieceDrag(piece, { board, pool, grid, rows, cols, cell });
+               pool.append(piece.el);
             });
          };
+         loader.src = item.imageUrl;
 
-         const subBtn = document.createElement("button");
-         subBtn.className = "submit-btn";
-         subBtn.innerText = "パズルを答えあわせ！";
-         subBtn.onclick = () => {
-            let isCorrect = true;
-            if (pool.children.length > 0) isCorrect = false;
-
-            document.querySelectorAll(".mino-piece").forEach(m => {
-               const targetR = parseInt(m.dataset.targetR);
-               const targetC = parseInt(m.dataset.targetC);
-               const originR = parseInt(m.dataset.originR);
-               const originC = parseInt(m.dataset.originC);
-
-               if (isNaN(targetR) || targetR !== originR || targetC !== originC) {
-                  isCorrect = false;
-               }
-            });
-            checkAnswer(isCorrect);
-         };
-         container.appendChild(subBtn);
+         addSubmit(container, "パズルを答えあわせ！", () => {
+            const solved = pieces.length > 0 && pieces.every(p =>
+               p.target && p.target.row === p.originR && p.target.col === p.originC);
+            checkAnswer(solved);
+         });
       }
 
+      /** ランダムな 2〜4 マスのピースで盤面を敷き詰める */
       function generatePolyominos(rows, cols) {
-         const grid = Array.from({ length: rows }, () => Array(cols).fill(false));
-         const minos = [];
+         const used = Array.from({ length: rows }, () => Array(cols).fill(false));
+         const DIRS = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+         const result = [];
 
          for (let r = 0; r < rows; r++) {
             for (let c = 0; c < cols; c++) {
-               if (grid[r][c]) continue;
-
-               const targetSize = Math.floor(Math.random() * 3) + 2;
+               if (used[r][c]) continue;
+               const size = 2 + Math.floor(Math.random() * 3);
                const blocks = [{ r, c }];
-               grid[r][c] = true;
+               used[r][c] = true;
 
-               while (blocks.length < targetSize) {
-                  const neighbors = [];
-                  blocks.forEach(b => {
-                     [[0, 1], [1, 0], [0, -1], [-1, 0]].forEach(([dr, dc]) => {
-                        const nr = b.r + dr, nc = b.c + dc;
-                        if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !grid[nr][nc]) {
-                           if (!neighbors.some(n => n.r === nr && n.c === nc)) {
-                              neighbors.push({ r: nr, c: nc });
-                           }
-                        }
-                     });
-                  });
-
-                  if (neighbors.length === 0) break;
-
-                  const nextCell = neighbors[Math.floor(Math.random() * neighbors.length)];
-                  grid[nextCell.r][nextCell.c] = true;
-                  blocks.push(nextCell);
+               while (blocks.length < size) {
+                  const candidates = blocks
+                     .flatMap(b => DIRS.map(([dr, dc]) => ({ r: b.r + dr, c: b.c + dc })))
+                     .filter(n => n.r >= 0 && n.r < rows && n.c >= 0 && n.c < cols && !used[n.r][n.c]);
+                  if (!candidates.length) break;
+                  const next = candidates[Math.floor(Math.random() * candidates.length)];
+                  used[next.r][next.c] = true;
+                  blocks.push(next);
                }
-               minos.push({ blocks });
+               result.push(blocks);
             }
          }
-         return minos;
+         return result;
       }
 
-      function clearMinoFromBoardState(minoEl) {
-         const targetR = parseInt(minoEl.dataset.targetR);
-         const targetC = parseInt(minoEl.dataset.targetC);
-         const shape = JSON.parse(minoEl.dataset.shape || "[]");
+      function buildPiece(blocks, imageUrl, rows, cols, cell) {
+         const minR = Math.min(...blocks.map(b => b.r)), maxR = Math.max(...blocks.map(b => b.r));
+         const minC = Math.min(...blocks.map(b => b.c)), maxC = Math.max(...blocks.map(b => b.c));
+         const w = maxC - minC + 1, hh = maxR - minR + 1;
 
-         if (!isNaN(targetR) && !isNaN(targetC)) {
-            shape.forEach(b => {
-               const r = targetR + b.relR;
-               const c = targetC + b.relC;
-               if (r >= 0 && r < BOARD_ROWS && c >= 0 && c < BOARD_COLS) {
-                  if (boardState[r][c] === minoEl.id) {
-                     boardState[r][c] = null;
-                  }
-               }
+         const el = h("div", "mino-piece");
+         el.style.width = `${w * cell}px`;
+         el.style.height = `${hh * cell}px`;
+
+         blocks.forEach(b => {
+            const block = h("div", "mino-block");
+            block.style.left = `${(b.c - minC) * cell}px`;
+            block.style.top = `${(b.r - minR) * cell}px`;
+            block.style.backgroundImage = `url(${imageUrl})`;
+            block.style.backgroundSize = `${cols * cell}px ${rows * cell}px`;
+            block.style.backgroundPosition = `-${b.c * cell}px -${b.r * cell}px`;
+            el.append(block);
+         });
+
+         return {
+            el, w, h: hh, originR: minR, originC: minC,
+            shape: blocks.map(b => ({ dr: b.r - minR, dc: b.c - minC })),
+            target: null // 盤面に置かれたときの {row, col}
+         };
+      }
+
+      function attachPieceDrag(piece, { board, pool, grid, rows, cols, cell }) {
+         const el = piece.el;
+         let dragging = false, startX, startY, baseLeft, baseTop;
+
+         const release = () => { // 盤面の占有を解除
+            if (!piece.target) return;
+            piece.shape.forEach(({ dr, dc }) => {
+               const r = piece.target.row + dr, c = piece.target.col + dc;
+               if (grid[r]?.[c] === piece) grid[r][c] = null;
             });
-         }
-         delete minoEl.dataset.targetR;
-         delete minoEl.dataset.targetC;
-      }
+            piece.target = null;
+         };
 
-      function initPointerDrag(minoEl, board, pool, cellSize) {
-         let startX, startY;
-         let initialLeft, initialTop;
-         let isDragging = false;
+         const canPlace = (row, col) =>
+            row >= 0 && col >= 0 && row + piece.h <= rows && col + piece.w <= cols &&
+            piece.shape.every(({ dr, dc }) => grid[row + dr][col + dc] === null);
 
-         minoEl.onpointerdown = (e) => {
+         el.onpointerdown = e => {
             e.preventDefault();
-            minoEl.setPointerCapture(e.pointerId);
-            isDragging = true;
-            minoEl.classList.add("dragging");
-
-            startX = e.clientX;
-            startY = e.clientY;
-
-            if (minoEl.dataset.targetR !== undefined) {
-               clearMinoFromBoardState(minoEl);
+            release();
+            const rect = el.getBoundingClientRect();
+            if (el.parentElement !== document.body) {
+               el.style.position = "fixed";
+               el.style.left = `${rect.left}px`;
+               el.style.top = `${rect.top}px`;
+               document.body.append(el); // 付け替えてからキャプチャしないと解除される場合がある
             }
-
-            const rect = minoEl.getBoundingClientRect();
-            if (minoEl.parentElement !== document.body) {
-               minoEl.style.position = "fixed";
-               minoEl.style.left = `${rect.left}px`;
-               minoEl.style.top = `${rect.top}px`;
-               document.body.appendChild(minoEl);
-            }
-
-            initialLeft = rect.left;
-            initialTop = rect.top;
+            el.setPointerCapture(e.pointerId);
+            dragging = true;
+            el.classList.add("dragging");
+            startX = e.clientX; startY = e.clientY;
+            baseLeft = rect.left; baseTop = rect.top;
          };
 
-         minoEl.onpointermove = (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-
-            minoEl.style.left = `${initialLeft + dx}px`;
-            minoEl.style.top = `${initialTop + dy}px`;
+         el.onpointermove = e => {
+            if (!dragging) return;
+            el.style.left = `${baseLeft + e.clientX - startX}px`;
+            el.style.top = `${baseTop + e.clientY - startY}px`;
          };
 
-         minoEl.onpointerup = (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            minoEl.releasePointerCapture(e.pointerId);
-            minoEl.classList.remove("dragging");
+         const drop = e => {
+            if (!dragging) return;
+            dragging = false;
+            try { el.releasePointerCapture(e.pointerId); } catch { }
+            el.classList.remove("dragging");
 
-            const boardRect = board.getBoundingClientRect();
-            const minoRect = minoEl.getBoundingClientRect();
+            const b = board.getBoundingClientRect(), m = el.getBoundingClientRect();
+            const col = Math.round((m.left - b.left - board.clientLeft) / cell);
+            const row = Math.round((m.top - b.top - board.clientTop) / cell);
 
-            const relX = minoRect.left - boardRect.left;
-            const relY = minoRect.top - boardRect.top;
-
-            const dropC = Math.round(relX / cellSize);
-            const dropR = Math.round(relY / cellSize);
-
-            const shape = JSON.parse(minoEl.dataset.shape || "[]");
-            const wCols = parseInt(minoEl.dataset.wCols);
-            const hRows = parseInt(minoEl.dataset.hRows);
-
-            const inBounds = (dropR >= 0 && dropR + hRows <= BOARD_ROWS && dropC >= 0 && dropC + wCols <= BOARD_COLS);
-
-            let canPlace = inBounds;
-            if (inBounds) {
-               shape.forEach(b => {
-                  const checkR = dropR + b.relR;
-                  const checkC = dropC + b.relC;
-                  if (boardState[checkR][checkC] !== null) canPlace = false;
-               });
-            }
-
-            if (canPlace) {
-               minoEl.style.position = "absolute";
-               minoEl.style.left = `${dropC * cellSize}px`;
-               minoEl.style.top = `${dropR * cellSize}px`;
-               minoEl.dataset.targetR = dropR;
-               minoEl.dataset.targetC = dropC;
-
-               shape.forEach(b => {
-                  boardState[dropR + b.relR][dropC + b.relC] = minoEl.id;
-               });
-
-               board.appendChild(minoEl);
+            if (canPlace(row, col)) {
+               el.style.position = "absolute";
+               el.style.left = `${col * cell}px`;
+               el.style.top = `${row * cell}px`;
+               piece.target = { row, col };
+               piece.shape.forEach(({ dr, dc }) => { grid[row + dr][col + dc] = piece; });
+               board.append(el);
             } else {
-               minoEl.style.position = "relative";
-               minoEl.style.left = "0px";
-               minoEl.style.top = "0px";
-               pool.appendChild(minoEl);
+               el.style.position = "relative";
+               el.style.left = "0px";
+               el.style.top = "0px";
+               pool.append(el);
             }
          };
+         el.onpointerup = drop;
+         el.onpointercancel = drop;
       }
+
+      /* ==========================================================
+       * 9. 起動
+       * ========================================================== */
+      initAudio();
+      document.addEventListener("pointerdown", unlockAudio, { once: true });
+      $("btnHome").onclick = goHome;
+      $("btnPrev").onclick = () => goTo(state.qIdx - 1);
+      $("btnNext").onclick = () => goTo(state.qIdx + 1);
+      $("quizSelect").onchange = e => goTo(Number(e.target.value));
+      goHome();
    </script>
 </body>
 
