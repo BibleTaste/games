@@ -465,11 +465,11 @@ const quizThemes = [
             "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_04_md.jpg"
          },
          {
-      id: "lesson19",
-      title: "エホバの証人は本物のクリスチャン？",
-      description: "「いつまでも しあわせに くらせます」レッスン１９の クイズだよ",
-      image: "https://cms-imgp.jw-cdn.org/img/p/1102021219/J/art/1102021219_J_cnt_01_lg.jpg",
-      questions: [
+            id: "lesson19",
+            title: "エホバの証人は本物のクリスチャン？",
+            description: "「いつまでも しあわせに くらせます」レッスン１９の クイズだよ",
+            image: "https://cms-imgp.jw-cdn.org/img/p/1102021219/J/art/1102021219_J_cnt_01_lg.jpg",
+            questions: [
          // --- セクション1：ほんもののクリスチャンとは？（クイズ1〜3） ---
          {
             "type": "slide",
@@ -543,8 +543,6 @@ const quizThemes = [
             "title": "今日の まなびの まとめ",
             "content": "・エホバの証人は本物のクリスチャン。 \n\n 世界的な家族としてエホバを崇拝し，聖書を固く信じ，エホバについての真実を伝えている。"
          }
-      ]
-   }
       ]
    }
 ];
