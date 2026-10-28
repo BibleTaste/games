@@ -463,13 +463,15 @@ const quizThemes = [
             "title": "今日の まなびの まとめ",
             "content": "・ほんものの クリスチャンは 聖書の おしえに したがっています。\n\n・おたがいを 深く 愛し合っています。\n\n・神の おうこくの よい しらせを よろこんで 人々に 伝えています。\n\nエホバと イエスは、いつも あなたの 愛ある 歩みを 見ていてくださいます。",
             "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_04_md.jpg"
-         },
-         {
-            id: "lesson19",
-            title: "エホバの証人は本物のクリスチャン？",
-            description: "「いつまでも しあわせに くらせます」レッスン１９の クイズだよ",
-            image: "https://cms-imgp.jw-cdn.org/img/p/1102021219/J/art/1102021219_J_cnt_01_lg.jpg",
-            questions: [
+         }
+      ]
+     },
+   {
+      id: "lesson19",
+      title: "エホバの証人は本物のクリスチャン？",
+      description: "「いつまでも しあわせに くらせます」レッスン１９の クイズだよ",
+      image: "https://cms-imgp.jw-cdn.org/img/p/1102021219/J/art/1102021219_J_cnt_01_lg.jpg",
+      questions: [
          // --- セクション1：ほんもののクリスチャンとは？（クイズ1〜3） ---
          {
             "type": "slide",
@@ -477,7 +479,8 @@ const quizThemes = [
             "title": "エホバの証人は ほんものの クリスチャン？",
             "content": "ほんものの クリスチャンは、せいしょを かたく しんじ、せいしょの しんりを ほかの 人に つたえます。\n\n▶ 聖書を ひらいて、レッスン19の 内容を よく読んでみましょう！",
             "image": "https://cms-imgp.jw-cdn.org/img/p/1102021219/univ/art/1102021219_univ_cnt_02_lg.jpg"
-         },
+         }
+               },
          {
             "type": "single",
             "badge": "だい1もん",
@@ -530,7 +533,8 @@ const quizThemes = [
             "question": "なかまをたすけるパズルをやって、少し 休もう！",
             "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/1102021219/univ/art/1102021219_univ_cnt_06_xl.jpg",
             "explanation": "パズルを クリア！ すてきな えがおが ひろがったね。つぎの セクションも がんばろう！"
-         },
+         }
+               ,
         {
             "type": "slide",
             "badge": "📺️ビデオを見よう",
