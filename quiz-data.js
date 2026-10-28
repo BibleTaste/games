@@ -282,7 +282,7 @@ const quizThemes = [
          }
       ]
    },
-  {
+   {
       id: "lesson18",
       title: "ほんものの クリスチャンは どんなひとたち？",
       description: "「いつまでも しあわせに くらせます」レッスン１８の クイズだよ",
@@ -326,7 +326,7 @@ const quizThemes = [
                { "text": "聖書を ひらいて、イエスなら どうするかを 考えて 従う", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEivAqCn0d0DKBlrSajYyadGDa0nyf4E4YA_HN_SO9CvEkh827z-sISPS9Ha41RosGE2GdfGL5Bb_-NABKnZmK01qnB0sjydGzI-vArulogEqqBw0Y88qSySxBuG590LLzMdtzDKXGdJC9au/s400/book_tsubuse_woman.png" },
                { "text": "だまって いやなことを 我慢する", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidcXMGjyz8KTKTLmsyQBr_owBv2j-c5QP0NESYjocwbfpuwbGrLoZGStRSZLpEHg9n_ed-tWLXk65c-cGWxnaUvN6vGIDhkdxEKFs6JCqmT4glsIWZPvwtU6kJ_x9dn8FcOUhQv39rlas/s400/pose_namida_koraeru_woman.png" },
                { "text": "すきな おもちゃで あそんで わすれる", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgtTt_TwY1G9vmFllyb2P1HJG8bupntrmiVpvIlc1o_I0nc6mdC2a3Tq6LXBxOzawQfmzoL79ELuSPWwUaWRxyP-yKoNcareCxZu982NigKGBA4bUJ4CCEtr8gSrLPJEj5ZkLuFKFKRgOY/s400/toy_tsumiki_girl.png" },
-               { "text": "ねむってしまう", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgvW0Yb-hhPbjJO6OCN3ALdDns0cdG1JAU_C1Ibb-iuuPVBjHxz6uHFeXgaR5CrZuxY2cfbQEka-FVuWfIBexjtkJcwz0rMFno6MwkUoHkpolqN28s8_9jiQOrHVvKM9M5Hw5oLuijqKf9h/s400/ninpu_pose_sims.pngs" }
+               { "text": "ねむってしまう", "image": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgvW0Yb-hhPbjJO6OCN3ALdDns0cdG1JAU_C1Ibb-iuuPVBjHxz6uHFeXgaR5CrZuxY2cfbQEka-FVuWfIBexjtkJcwz0rMFno6MwkUoHkpolqN28s8_9jiQOrHVvKM9M5Hw5oLuijqKf9h/s400/ninpu_pose_sims.png" }
             ],
             "answer": "聖書を ひらいて、イエスなら どうするかを 考えて 従う",
             "explanation": "聖書の おしえを 日々の生活の 中で 思い出し、そのとおりに 行動することが 大切です。"
@@ -465,7 +465,7 @@ const quizThemes = [
             "image": "https://cms-imgp.jw-cdn.org/img/p/1102021218/univ/art/1102021218_univ_cnt_04_md.jpg"
          }
       ]
-     },
+   },
    {
       id: "lesson19",
       title: "エホバの証人は本物のクリスチャン？",
@@ -479,8 +479,7 @@ const quizThemes = [
             "title": "エホバの証人は ほんものの クリスチャン？",
             "content": "ほんものの クリスチャンは、せいしょを かたく しんじ、せいしょの しんりを ほかの 人に つたえます。\n\n▶ 聖書を ひらいて、レッスン19の 内容を よく読んでみましょう！",
             "image": "https://cms-imgp.jw-cdn.org/img/p/1102021219/univ/art/1102021219_univ_cnt_02_lg.jpg"
-         }
-               },
+         },
          {
             "type": "single",
             "badge": "だい1もん",
@@ -498,9 +497,9 @@ const quizThemes = [
             "type": "bible-first",
             "badge": "だい2もん",
             "question": "「エホバの証人」という なまえを つかっているのは どうして？",
-            "options": ["エホバが そうよんだから", "みんなで きめたから", "おとうさんが きめたから", "むかしから そうだったから"],,
+            "options": ["エホバが そうよんだから", "みんなで きめたから", "おとうさんが きめたから", "むかしから そうだったから"],
             "answer": "エホバが そうよんだから",
-            "explanation": "エホバはつかえる人たちに，「あなたたちはわたしの証人である」といいました。（イザヤ 43:10を読む。"
+            "explanation": "エホバはつかえる人たちに，「あなたたちはわたしの証人である」といいました。（イザヤ 43:10を読む）"
          },
          {
             "type": "multiple",
@@ -527,19 +526,18 @@ const quizThemes = [
             ],
             "explanation": "神は自分の言葉を人が徐々に理解できるようにします"
          },
-                  {
+         {
             "type": "puzzle",
             "badge": "🧩 たのしい パズル（ちゅうけい）",
             "question": "なかまをたすけるパズルをやって、少し 休もう！",
             "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/1102021219/univ/art/1102021219_univ_cnt_06_xl.jpg",
             "explanation": "パズルを クリア！ すてきな えがおが ひろがったね。つぎの セクションも がんばろう！"
-         }
-               ,
-        {
+         },
+         {
             "type": "slide",
             "badge": "📺️ビデオを見よう",
             "title": "たがいを愛する",
-            "content": "<a harf="https://www.jw.org/open?lank=pub-jwb_201707_12_VIDEO&wtlocale=J">ハイチの兄弟たち</a>ほんものの 弟子たちは、エホバの 愛や 神の王国の 良い知らせを ほかの 人にも よろこんで 伝えています。\n\n▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_181_VIDEO' target='_blank' style='color:#0284c7; font-weight:bold;'>【どうが】ほかの 人に つたえる よい しらせ</a> を 見てみよう！"
+            "content": "<a href=\"https://www.jw.org/open?lank=pub-jwb_201707_12_VIDEO&wtlocale=J\">ハイチの兄弟たち</a>ほんものの 弟子たちは、エホバの 愛や 神の王国の 良い知らせを ほかの 人にも よろこんで 伝えています。\n\n▶ <a href='https://www.jw.org/ja/%E3%83%A9%E3%82%A4%E3%83%96%E3%83%A9%E3%83%AA%E3%83%BC/%E3%83%93%E3%83%87%E3%82%AA/#ja/mediaitems/SeriesLFFVideos/pub-lffv_181_VIDEO' target='_blank' style='color:#0284c7; font-weight:bold;'>【どうが】ほかの 人に つたえる よい しらせ</a> を 見てみよう！"
          },
          {
             "type": "slide",
