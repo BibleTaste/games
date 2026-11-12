@@ -1,0 +1,87 @@
+/* index.html 専用スタイル（共通部品は common.css） */
+
+header {
+  margin: 40px 0 20px;
+  text-align: center;
+}
+
+.page-index .retro-title {
+  --shadow-step: 4px;
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #ff5757;
+  border-radius: 20px;
+  box-shadow: 0 4px 0 #b32020;
+}
+
+.sound-toggle {
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--c-yellow);
+  background: var(--c-dot);
+  border: 2px solid var(--c-yellow);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ゲームリスト */
+.game-list {
+  width: 90%;
+  max-width: 600px;
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.game-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.game-card:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--c-ink);
+}
+
+.game-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #2b2b2b;
+}
+
+.game-title::before {
+  content: '🎮';
+  font-size: 1.4rem;
+}
+
+.game-description {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #555555;
+}
+
+.play-btn {
+  padding: 12px 0;
+  font-size: 1.2rem;
+  border-width: 4px;
+  box-shadow: 0 5px 0 var(--c-ink);
+}
