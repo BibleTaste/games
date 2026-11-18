@@ -624,7 +624,7 @@ const quizThemes = [
          }, {
             "type": "puzzle",
             "badge": "🧩 たのしい パズル（ちゅうけい）",
-            "question": "なかまをたすけるパズルをやって、少し 休もう！",
+            "question": "会衆のしゃしんのパズルをやって、少し 休もう！",
             "imageUrl": "https://cms-imgp.jw-cdn.org/img/p/502012477/univ/art/502012477_univ_lsr_lg.jpg",
             "explanation": "パズルを クリア！ すてきな えがおが ひろがったね。つぎの セクションも がんばろう！"
          }
